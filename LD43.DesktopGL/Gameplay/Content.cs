@@ -16,6 +16,7 @@ namespace LD43.Gameplay
             void Texture(string name) => LoadAsset<Texture2D>(name);
 
             Texture("PlayerPlaceholder");
+            Texture("PlatformPlaceholder");
         }
     }
 }

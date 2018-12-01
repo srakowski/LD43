@@ -20,6 +20,7 @@ namespace LD43.Engine
         public void Load(Type sceneType, object state)
         {
             ActiveScene = _sceneCatalog[sceneType](state);
+            ActiveScene.Activate(Game.Services);            
         }
     }
 }

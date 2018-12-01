@@ -30,9 +30,10 @@ namespace LD43
 
         protected override void Initialize()
         {
+            Services.AddService<GraphicsDevice>(GraphicsDevice);
             base.Initialize();
             var sceneManager = Services.GetService<Engine.SceneManager>();
-            sceneManager.Load(typeof(Gameplay.Scenes.Dungeon), Gameplay.GameState.Create());
+            sceneManager.Load(typeof(Gameplay.Scenes.Dungeon), Gameplay.GameplayState.Create());
         }
 
         protected override void LoadContent()

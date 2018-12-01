@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LD43.Engine
 {
     public class Entity
     {
+        private IServiceProvider _services = null;
+
         private List<Component> _components = new List<Component>();
 
         public IEnumerable<Component> Components => _components.ToArray();
@@ -19,15 +23,22 @@ namespace LD43.Engine
 
         public void AddComponent(Component component)
         {
-            component.Entity = this;
             _components.Add(component);
             Transform = (component as Transform) ?? Transform;
+            if (_services != null) component.Activate(this, _services);
         }
 
         public void RemoveComponent(Component component)
         {
             Transform = component == Transform ? null : Transform;
             _components.Remove(component);
+        }
+
+        internal void Activate(IServiceProvider services)
+        {
+            _services = services;
+            var componentsToActivate = _components.ToList();
+            componentsToActivate.ForEach(c => c.Activate(this, _services));
         }
     }
 }
