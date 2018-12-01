@@ -9,7 +9,7 @@
     <ProjectGuid>{AE7D9B38-4BDF-4D67-BE9B-F6AF9383767E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LD43.DesktopGL</RootNamespace>
+    <RootNamespace>LD43</RootNamespace>
     <AssemblyName>LD43.DesktopGL</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
@@ -42,6 +42,25 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Engine\BehaviorManager.cs" />
+    <Compile Include="Engine\Camera.cs" />
+    <Compile Include="Engine\Component.cs" />
+    <Compile Include="Engine\Coroutine.cs" />
+    <Compile Include="Engine\Entity.cs" />
+    <Compile Include="Engine\InputManager.cs" />
+    <Compile Include="Engine\RenderingManager.cs" />
+    <Compile Include="Engine\Scene.cs" />
+    <Compile Include="Engine\SceneManager.cs" />
+    <Compile Include="Engine\SpriteRenderer.cs" />
+    <Compile Include="Engine\Transform.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="Gameplay\Behaviors\PlayerController.cs" />
+    <Compile Include="Gameplay\Content.cs" />
+    <Compile Include="Gameplay\Controls.cs" />
+    <Compile Include="Gameplay\GameState.cs" />
+    <Compile Include="Gameplay\Layers.cs" />
+    <Compile Include="Gameplay\Scenes\Catalog.cs" />
+    <Compile Include="Gameplay\Scenes\Dungeon.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -104,7 +123,7 @@
     </None>
     <None Include="app.manifest" />
   </ItemGroup>
-  <Import Project="..\LD43\LD43.projitems" Label="Shared" />
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
