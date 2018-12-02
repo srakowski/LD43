@@ -14,7 +14,6 @@ namespace LD43.Engine
         }
         public Rectangle Bounds { get; }
         public string TextureName { get; }
-        public bool IsImpassable => TextureName == "Tile_BG";
     }
 
     public class TilemapRenderer : Renderer

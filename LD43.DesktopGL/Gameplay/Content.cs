@@ -22,6 +22,7 @@ namespace LD43.Gameplay
             Texture("PlatformPlaceholder");
             Texture("Tile_BG");
             Texture("Tile_FG");
+            Texture("Tile_PF");
             Texture("Vase");
             Texture("GoldDrop");
             Texture("StarEnemy");

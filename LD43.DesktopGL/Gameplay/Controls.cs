@@ -7,6 +7,7 @@ namespace LD43.Gameplay
     public static class Controls
     {
         public const string MoveLeft = "Move Left";
+        public const string Drop = "Drop";
         public const string MoveRight = "Move Right";
         public const string Jump = "Jump";
         public const string SwingWeapon = "Swing Weapon";
@@ -15,6 +16,7 @@ namespace LD43.Gameplay
             new Dictionary<string, Control>
             {
                 { MoveLeft, new Button(Keys.A) },
+                { Drop, new Button(Keys.S) },
                 { MoveRight, new Button(Keys.D) },
                 { Jump, new Button(Keys.Space) },
                 { SwingWeapon, new Button(Keys.Enter) },

@@ -17,9 +17,11 @@ namespace LD43.Gameplay.Behaviors
         private readonly GameplayState _gs;
         private float _verticalSpeed = 0f;
         private float _horizontalSpeed = 0f;
-        private bool _onPlatform = false;
+        private bool _grounded = false;
+        private bool _groundedOnPlatform = false;
         private bool _isSwingingWeapon = false;
         private bool _isKnockingBack = false;
+        private int? _ignorePlatformsUntilY = null;
 
         public PlayerController(GameplayState gameplayState)
         {
@@ -60,8 +62,8 @@ namespace LD43.Gameplay.Behaviors
             _gs.Player.IsInvulnerable = true;            
             _verticalSpeed = -2;
             _horizontalSpeed = _gs.Player.FacingDirection == Models.FacingDirection.Right ? -1 : 1;
-            _onPlatform = false;
-            while (!_onPlatform)
+            _grounded = false;
+            while (!_grounded)
             {
                 yield return null;
             }
@@ -118,10 +120,15 @@ namespace LD43.Gameplay.Behaviors
             _verticalSpeed += (_gravity * Delta);
             if (_verticalSpeed > 9.8f) _verticalSpeed = 9.8f;
 
-            if (_onPlatform && Input.GetControl<Button>(Controls.Jump).IsDown() && !_isKnockingBack)
+            if (_grounded && Input.GetControl<Button>(Controls.Jump).IsDown() && !_isKnockingBack)
             {
                 _verticalSpeed = -3.1f;
-                _onPlatform = false;
+                _grounded = false;
+            }
+            else if (_groundedOnPlatform && Input.GetControl<Button>(Controls.Drop).IsDown())
+            {
+                _ignorePlatformsUntilY = (int)(Entity.Transform.Position.Y + 128);
+                _groundedOnPlatform = false;
             }
 
             newPlayerPosition += (new Vector2(_horizontalSpeed, _verticalSpeed) * Delta);
@@ -141,9 +148,15 @@ namespace LD43.Gameplay.Behaviors
             var playerBounds = CalculateBounds(Entity.Transform.Position);
             var targetBounds = CalculateBounds(newPlayerPosition);
 
+            _ignorePlatformsUntilY =
+                _ignorePlatformsUntilY.HasValue && Entity.Transform.Position.Y < _ignorePlatformsUntilY.Value
+                    ? _ignorePlatformsUntilY
+                    : null;
+
             var tiles = _gs.CurrentRoom
                 .GetTilesNear(newPlayerPosition)
-                .Where(t => t.IsImpassable);
+                .Where(t => t.IsImpassable() || 
+                    (t.IsPlatform() && playerBounds.Bottom < (t.Bounds.Top + 1)));
 
             if (!tiles.Any() || !tiles.Any(t => t.Bounds.Intersects(targetBounds)))
             {
@@ -218,7 +231,7 @@ namespace LD43.Gameplay.Behaviors
                 {
                     if (collTile.HasValue && collTile.Value.Bounds.Y >= bounds.Bottom)
                     {
-                        _onPlatform = true;
+                        _grounded = true;
                         _verticalSpeed = 0;
                     }
                 }
@@ -230,6 +243,13 @@ namespace LD43.Gameplay.Behaviors
                         _verticalSpeed = 0;
                     }
                 }
+            }
+
+            _groundedOnPlatform = collTile.HasValue && collTile.Value.IsPlatform();
+            if (_groundedOnPlatform && _ignorePlatformsUntilY.HasValue)
+            {
+                _groundedOnPlatform = false;
+                return newPlayerPosition;
             }
 
             return prevStep;
@@ -250,5 +270,11 @@ namespace LD43.Gameplay.Behaviors
                 (pos.X < bounds.Right && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
                 (pos.X > bounds.Left && _gs.Player.FacingDirection == Models.FacingDirection.Right);
         }
+    }
+
+    public static class PlatformHelpers
+    {
+        public static bool IsImpassable(this Tile self) => self.TextureName == "Tile_FG";
+        public static bool IsPlatform(this Tile self) => self.TextureName == "Tile_PF";
     }
 }

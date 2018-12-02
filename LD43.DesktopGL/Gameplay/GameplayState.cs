@@ -47,7 +47,7 @@ namespace LD43.Gameplay
         {
             var r1 = new RoomConfig();
             r1.SizeX = 20;
-            r1.SizeY = 10;
+            r1.SizeY = 20;
             r1.TileSize = 128;
             r1.Inanimates = Enumerable.Empty<RoomConfig.Inanimate>();
             r1.Enemies = Enumerable.Empty<RoomConfig.Enemy>();
@@ -57,15 +57,17 @@ namespace LD43.Gameplay
                 for (int y = 0; y < r1.SizeY; y++)
                 {
                     tiles.Add(x == 0 || y == 0 || y == r1.SizeY - 1
-                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_BG" }
-                        : new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_FG" }
+                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_FG" }
+                        : y % 4 == 0
+                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_PF" }
+                        : new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_BG" }
                     );
                 }
             r1.Tiles = tiles;
 
             var r2 = new RoomConfig();
             r2.SizeX = 20;
-            r2.SizeY = 10;
+            r2.SizeY = 20;
             r2.StartX = 20;
             r2.StartY = 0;
             r2.TileSize = 128;
@@ -76,8 +78,10 @@ namespace LD43.Gameplay
                 for (int y = r2.StartY; y < r2.StartY + r2.SizeY; y++)
                 {
                     tiles.Add(x == r2.StartX + r2.SizeX - 1 || y == 0 || y == r2.StartY + r2.SizeY - 1
-                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_BG" }
-                        : new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_FG" }
+                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_FG" }
+                        : y % 4 == 0
+                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_PF" }
+                        : new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_BG" }
                     );
                 }
             r2.Tiles = tiles;
