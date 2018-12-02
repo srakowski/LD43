@@ -9,6 +9,8 @@ namespace LD43.Gameplay
 
         public float SacrificeRequiredInMilleseconds { get; private set; }
 
+        public Sacrifice Sacrifice { get; private set; }
+
         public Room Room { get; set; }
         
         public Player Player { get; set; }
@@ -25,7 +27,8 @@ namespace LD43.Gameplay
             var newGame = new GameplayState();
 
             newGame.Random = new Random();
-            newGame.SacrificeRequiredInMilleseconds = 3 * 60 * 1000;
+            newGame.Sacrifice = Sacrifice.CreateFirst(newGame);
+            newGame.SacrificeRequiredInMilleseconds = newGame.Sacrifice.TimeRequiredInMilleseconds;
             newGame.Player = new Player();
 
             return newGame;

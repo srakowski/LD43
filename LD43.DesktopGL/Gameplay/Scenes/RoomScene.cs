@@ -52,7 +52,7 @@ namespace LD43.Gameplay.Scenes
                 Layer = "Hud",
             };
             sacrificeTimer.AddComponent(spriteTextRenderer);
-            sacrificeTimer.AddComponent(new SacrificeTimerUpdater(gs, spriteTextRenderer));
+            sacrificeTimer.AddComponent(new SacrificeUpdater(gs, spriteTextRenderer));
             sacrificeTimer.Transform.Position = new Vector2(100, 100);
             s.AddEntity(sacrificeTimer);
 

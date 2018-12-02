@@ -10,6 +10,8 @@ namespace LD43.Gameplay.Models
     {
         private List<Inanimate> _inanimates;
 
+        private List<Drop> _drops = new List<Drop>();
+
         public Room(RoomConfig config, GameplayState gs)
         {
             PlayerStartPosition = config.PlayerStartPosition;
@@ -49,6 +51,8 @@ namespace LD43.Gameplay.Models
 
         public IEnumerable<Inanimate> Inanimates => _inanimates.ToArray();
 
+        public IEnumerable<Drop> Drops => _drops.ToArray();
+
         public IEnumerable<Tile> GetTilesNear(Vector2 position)
         {
             List<Tile> tiles = new List<Tile>();
@@ -71,6 +75,17 @@ namespace LD43.Gameplay.Models
                 _inanimates.Remove(i);
             }
         }
+
+        public void AddDrop(Drop drop)
+        {
+            _drops.Add(drop);
+        }
+
+        public void PickupDrop(Drop drop)
+        {
+            drop.IsPickedUp = true;
+            _drops.Remove(drop);
+        }
     }
 
     public class Inanimate
@@ -79,6 +94,7 @@ namespace LD43.Gameplay.Models
         {
             Position = pos;
             Type = type;
+            GoldValue = gs.Random.Next(10);
         }
 
         public Vector2 Position { get; }
@@ -86,5 +102,7 @@ namespace LD43.Gameplay.Models
         public InanimateType Type { get; }
 
         public bool IsDestroyed { get; set; }
+
+        public int GoldValue { get; }
     }
 }

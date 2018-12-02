@@ -30,6 +30,8 @@ namespace LD43.Gameplay.Behaviors
                 StartCoroutine(SwingingWeapon());
             }
 
+            PickupDrops();
+
             var newPlayerPosition = Entity.Transform.Position;
             var kb = Keyboard.GetState();
             if (InputManager.PrevKBState.IsKeyDown(Keys.F) && InputManager.CurrKBState.IsKeyUp(Keys.F))
@@ -72,11 +74,13 @@ namespace LD43.Gameplay.Behaviors
                 if (Input.GetControl<Button>(Controls.MoveLeft).IsDown())
                 {
                     newPlayerPosition += (new Vector2(-1, 0) * Delta);
+                    _gs.Player.FacingDirection = Models.FacingDirection.Left;
                 }
 
                 if (Input.GetControl<Button>(Controls.MoveRight).IsDown())
                 {
                     newPlayerPosition += (new Vector2(1, 0) * Delta);
+                    _gs.Player.FacingDirection = Models.FacingDirection.Right;
                 }
             }
 
@@ -103,8 +107,10 @@ namespace LD43.Gameplay.Behaviors
                 .Inanimates
                 .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
                 .Where(i =>
-                    (i.Position.X < Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
-                    (i.Position.X > Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Right)
+                {
+                    var pos = i.Position;
+                    return IsFacing(pos);
+                }
                 );
             if (destroyedInanimates.Any())
             {
@@ -112,6 +118,24 @@ namespace LD43.Gameplay.Behaviors
             }
             yield return WaitYieldInstruction.Create(400);
             _isSwingingWeapon = false;
+        }
+
+        private void PickupDrops()
+        {
+            var bounds = CalculateBounds(Entity.Transform.Position);
+            _gs.Room.Drops
+                .Where(d => bounds.Contains(d.Position))
+                .Where(d => IsFacing(d.Position))
+                .ToList()
+                .ForEach(d =>
+                {
+                    var r = d.Match(
+                        goldDrop: g => new { GoldToAdd = g.Value, SoulsToAdd = 0 },
+                        soulDrop: s => new { GoldToAdd = 0, SoulsToAdd = s.Value }
+                    );
+                    _gs.Player.Pickup(r.GoldToAdd, r.SoulsToAdd);
+                    _gs.Room.PickupDrop(d);
+                });
         }
 
         private Vector2 StepToNewPosition(Vector2 newPlayerPosition, IEnumerable<Tile> tiles)
@@ -201,6 +225,12 @@ namespace LD43.Gameplay.Behaviors
                 (p - new Vector2(64, 96)).ToPoint(),
                 new Point(128, 192)
             );
+        }
+
+        private bool IsFacing(Vector2 pos)
+        {
+            return (pos.X < Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
+                (pos.X > Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Right);
         }
     }
 }

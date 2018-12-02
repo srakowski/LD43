@@ -68,25 +68,20 @@ namespace LD43.LevelEditor
                     }
                     else if (RVM.Mode == "Inanimate")
                     {
-                        if (ms.LeftButton == ButtonState.Pressed)
+                        var ix = (ms.Position.X - (ms.Position.X % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
+                        var iy = (ms.Position.Y - (ms.Position.Y % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
+                        var tar = RVM.Inanimates.FirstOrDefault(m => m.Position.X == ix && m.Position.Y == iy);
+                        if (ms.LeftButton == ButtonState.Pressed && tar == null)
                         {
-                            var ix = (ms.Position.X - (ms.Position.X % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
-                            var iy = (ms.Position.Y - (ms.Position.Y % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
                             RVM.Inanimates.Add(new InanimateTypeViewModel
                             {
                                 Type = RVM.InanimateType,
                                 Position = new Point(ix, iy),
                             });
                         }
-                        if (ms.RightButton == ButtonState.Pressed)
-                        {
-                            var ix = (ms.Position.X - (ms.Position.X % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
-                            var iy = (ms.Position.Y - (ms.Position.Y % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
-                            var tar = RVM.Inanimates.FirstOrDefault(m => m.Position.X == ix && m.Position.Y == iy);
-                            if (tar != null)
-                            {
-                                RVM.Inanimates.Remove(tar);
-                            }
+                        if (ms.RightButton == ButtonState.Pressed && tar != null)
+                        {                            
+                            RVM.Inanimates.Remove(tar);
                         }
                     }
                 }

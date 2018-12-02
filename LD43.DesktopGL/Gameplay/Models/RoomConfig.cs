@@ -28,5 +28,11 @@ namespace LD43.Gameplay.Models
             public Point Position { get; set; }
             public InanimateType Type { get; set; }
         }
+
+        public class Enemy
+        {
+            public Point Position { get; set; }
+            public EnemyType Type { get; set; }
+        }
     }
 }

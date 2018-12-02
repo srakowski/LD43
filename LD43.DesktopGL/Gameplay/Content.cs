@@ -24,6 +24,7 @@ namespace LD43.Gameplay
             Texture("Tile_BG");
             Texture("Tile_FG");
             Texture("Vase");
+            Texture("GoldDrop");
 
             Room("Rooms/room");
 
