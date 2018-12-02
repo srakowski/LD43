@@ -11,6 +11,8 @@ namespace LD43.Gameplay
 {
     public class GameplayState
     {
+        private static readonly Point Origin = new Point(100, 100);
+
         public Random Random { get; private set; }
 
         public float SacrificeRequiredInMilleseconds { get; private set; }
@@ -21,7 +23,39 @@ namespace LD43.Gameplay
 
         public Room[] Rooms { get; set; }
 
+        public bool YouWin { get; set; } = false;
+
+        internal void CompleteTheSacrifice()
+        {
+            Player.HP = Player.MaxHP;
+            SacrificeRequiredInMilleseconds = Sacrifice.TimeRequiredInMilleseconds;
+            var nextSacrifice = Sacrifice.Next();
+            if (nextSacrifice == null)
+            {
+                YouWin = true;
+                return;
+            }
+            Player.HP = Player.MaxHP;
+            Player.GoldCollected = 0;
+            Player.SoulsCollected = 0;            
+            Sacrifice = nextSacrifice;
+            SacrificeRequiredInMilleseconds = Sacrifice.TimeRequiredInMilleseconds;
+        }
+
+        internal bool IsSacrificeOverdue()
+        {
+            return SacrificeRequiredInMilleseconds <= 0;
+        }
+
         public Player Player { get; set; }
+
+        public bool IsGameOver => YouWin || Player.IsDead;
+
+        internal bool DoesPlayerHaveTheSacrifice()
+        {
+            return Player.GoldCollected >= Sacrifice.GoldRequired &&
+                Player.SoulsCollected >= Sacrifice.SoulsRequired;
+        }
 
         public void DecrementSacrficeTimer(float delta)
         {
@@ -48,14 +82,16 @@ namespace LD43.Gameplay
         {
             var loc = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
+            var sacConfig = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/sacrificeRoom.json")));
             var config1 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room.json")));
             var config2 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room2.json")));
 
             var configs = new[] { config1, config2 };
 
             var rooms = new Dictionary<Point, Room>();
-            rooms.Add(Point.Zero, new Room(config1, Point.Zero, this));
-            ExpandDungeon(rooms, configs, Point.Zero);
+
+            rooms.Add(Origin, new Room(sacConfig, Origin * new Point(31, 31), this, true, 0));
+            ExpandDungeon(rooms, configs, Origin);
             CloseEntries(rooms);
             foreach (var room in rooms.Values) room.Populate(this);
             return rooms.Values.ToArray();
@@ -84,19 +120,19 @@ namespace LD43.Gameplay
             if (CreateRoom(rooms, configs, fromPoint + new Point(0, -1))) dirFlags = dirFlags.Replace("N", "");
             if (CreateRoom(rooms, configs, fromPoint + new Point(1, 0))) dirFlags = dirFlags.Replace("E", "");
             if (CreateRoom(rooms, configs, fromPoint + new Point(0, 1))) dirFlags = dirFlags.Replace("S", "");
-            //if (CreateRoom(rooms, configs, fromPoint + new Point(-1, 0))) dirFlags = dirFlags.Replace("W", "");
+            if (CreateRoom(rooms, configs, fromPoint + new Point(-1, 0))) dirFlags = dirFlags.Replace("W", "");
         }
 
         private bool CreateRoom(Dictionary<Point, Room> rooms, RoomConfig[] configs, Point point)
         {
             if (rooms.ContainsKey(point)) return true;
             
-            var distanceFromCenter = Vector2.Distance(Vector2.Zero, point.ToVector2());
+            var distanceFromCenter = Vector2.Distance(Origin.ToVector2(), point.ToVector2());
             var chanceToSpawn =
-                distanceFromCenter < 2 ? 100 :
-                distanceFromCenter < 3 ? 90 :
-                distanceFromCenter < 5 ? 60 :
-                distanceFromCenter < 8 ? 40 :
+                distanceFromCenter < 4 ? 100 :
+                distanceFromCenter < 6 ? 90 :
+                distanceFromCenter < 10 ? 60 :
+                distanceFromCenter < 16 ? 40 :
                 10;
 
             bool shouldSpawn = Random.Next(100) < chanceToSpawn;
@@ -104,7 +140,7 @@ namespace LD43.Gameplay
 
             var config = Random.Next(configs.Length);
 
-            var room = new Room(configs[config], point * new Point(31, 31), this);
+            var room = new Room(configs[config], point * new Point(31, 31), this, false, (int)distanceFromCenter);
             rooms[point] = room;
 
             ExpandDungeon(rooms, configs, point);

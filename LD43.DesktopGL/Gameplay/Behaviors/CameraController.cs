@@ -1,6 +1,7 @@
 ﻿using LD43.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 
 namespace LD43.Gameplay.Behaviors
 {
@@ -19,6 +20,7 @@ namespace LD43.Gameplay.Behaviors
         public override void Initialize()
         {
             _graphicsDevice = Services.GetService<GraphicsDevice>();
+            Services.GetService<RenderingManager>().Layers.ToList().ForEach(l => l.Show = true);
             Update();
         }
 

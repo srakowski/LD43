@@ -12,9 +12,11 @@ namespace LD43.Gameplay.Behaviors
         private SceneManager _sceneManager;
 
         private Func<Vector2, Vector2, Entity> _projectileFactory;
+        private GameplayState _gs;
 
-        public ProjectileSpawner(ProjectileSpawnerStrategy spawnerStrategy, Func<Vector2, Vector2, Entity> projectileFactory)
+        public ProjectileSpawner(GameplayState gs, ProjectileSpawnerStrategy spawnerStrategy, Func<Vector2, Vector2, Entity> projectileFactory)
         {
+            _gs = gs;
             _spawnerStrategy = spawnerStrategy;
             _projectileFactory = projectileFactory;
         }
@@ -28,6 +30,7 @@ namespace LD43.Gameplay.Behaviors
 
         public void Spawn(Vector2 direction)
         {
+            if (_gs.IsGameOver) return;
             _sceneManager.ActiveScene.AddEntity(_projectileFactory.Invoke(Entity.Transform.Position, direction));
         }
     }

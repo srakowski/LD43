@@ -14,9 +14,18 @@ namespace LD43.Gameplay.Models
 
         private List<Drop> _drops = new List<Drop>();
 
-        public Room(RoomConfig config, Point offset, GameplayState gs)
+        public bool IsThroneRoom {get;}
+
+        private int _intensity;
+
+        public Room(RoomConfig config, Point offset, GameplayState gs, bool throneRoom, int intensity)
         {
-            PlayerStartPosition = config.PlayerStartPosition.ToVector2();
+            IsThroneRoom = throneRoom;
+            _intensity = intensity;
+
+            var worldOffset = (offset.ToVector2() * config.TileSize);
+
+            PlayerStartPosition = config.PlayerStartPosition.ToVector2() + worldOffset;
 
             _offset = offset;
 
@@ -48,12 +57,12 @@ namespace LD43.Gameplay.Models
             Tilemap = tm;
 
             _inanimates = config.Inanimates.Select(i => new Inanimate(
-                i.Position.ToVector2(),
+                i.Position.ToVector2() + worldOffset,
                 i.Type,
                 gs)).ToList();
 
             _enemies = config.Enemies.Select(e => new Enemy(
-                e.Position.ToVector2(),
+                e.Position.ToVector2() + worldOffset,
                 e.Type,
                 gs)).ToList();
         }
@@ -156,6 +165,12 @@ namespace LD43.Gameplay.Models
 
         public void Populate(GameplayState gs)
         {
+            var seChance =
+                _intensity < 4 ? 20 :
+                _intensity < 8 ? 30 :
+                _intensity < 12 ? 50 :
+                100;
+
             var spawnGroups = Flatten(Tilemap)
                 .GroupBy(t => (t.Tag as TileTag).SpawnGroup)
                 .Where(t => t.Key != 0);
@@ -163,7 +178,7 @@ namespace LD43.Gameplay.Models
             foreach (var spawnGroup in spawnGroups)
             {
                 var si = gs.Random.Next(100) < 20;
-                var se = gs.Random.Next(100) < 20;
+                var se = gs.Random.Next(100) < seChance;
                 if (!spawnGroup.Any()) continue;
                 var tileQueue = new Queue<Tile>(spawnGroup.OrderBy(sg => gs.Random.Next(100)));
                 if (si)

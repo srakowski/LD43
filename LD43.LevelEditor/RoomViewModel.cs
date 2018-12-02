@@ -83,7 +83,7 @@ namespace LD43.LevelEditor
 
         public string EnemyType { get; internal set; }
 
-        public int SnapTo { get; set; } = 64;
+        public int SnapTo { get; set; } = 128;
 
         public int SpawnGroup { get; internal set; }
 

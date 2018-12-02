@@ -25,6 +25,8 @@ namespace LD43.Gameplay.Behaviors
 
         public override void Update()
         {
+            if (_gs.IsGameOver) return;
+
             if (_enemy.IsDead)
             {
                 _sceneManager.ActiveScene.RemoveEntity(Entity);
@@ -51,7 +53,7 @@ namespace LD43.Gameplay.Behaviors
             
             if (_gs.Player.Bounds.Intersects(CalculateBounds(Entity.Transform.Position)))
             {
-                _gs.Player.Hit(_enemy.Damage);
+                _gs.Player.Hit();
             }
         }
 

@@ -29,7 +29,7 @@ namespace LD43.Gameplay.Behaviors
             if (!_gs.CurrentRoom.Bounds.Contains(_gs.Player.Position))
             {
                 _gs.CurrentRoom = _gs.Rooms.First(r => r.Bounds.Contains(_gs.Player.Position));
-                 _gs.CurrentRoom.PlayerStartPosition = _gs.Player.Position;
+                _gs.CurrentRoom.PlayerStartPosition = _gs.Player.Position;
                 _sceneManager.Load(typeof(RoomScene), _gs);
             }
         }

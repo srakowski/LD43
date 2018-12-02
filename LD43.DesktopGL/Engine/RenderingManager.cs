@@ -17,6 +17,8 @@ namespace LD43.Engine
 
         private SpriteBatch _spriteBatch;
 
+        public IEnumerable<Layer> Layers => _layers.ToArray();
+
         public RenderingManager(Game game, Func<Dictionary<string, object>> assetCatalogFactory, IEnumerable<Layer> layers) : base(game)
         {
             _assetCatalogFactory = assetCatalogFactory;
@@ -66,6 +68,7 @@ namespace LD43.Engine
 
             foreach (var layer in _layers)
             {
+                if (!layer.Show) continue;
                 var renderersThisLayer = renderersByLayer.FirstOrDefault(r => r.Key == layer.Name)?.ToList();
                 if (renderersThisLayer == null || !renderersThisLayer.Any()) continue;
                 var layerCamera = renderersThisLayer.OfType<Camera>().FirstOrDefault(c => c != globalCamera) ?? globalCamera;
@@ -90,6 +93,8 @@ namespace LD43.Engine
         public string Name { get; set; } = "";
 
         public int ZIndex { get; set; } = 0;
+
+        public bool Show { get; set; } = true;
 
         public bool StickToCamera { get; set; }
 

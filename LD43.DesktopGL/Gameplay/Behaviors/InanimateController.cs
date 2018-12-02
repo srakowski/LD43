@@ -24,6 +24,7 @@ namespace LD43.Gameplay.Behaviors
 
         public override void Update()
         {
+            if (_gs.IsGameOver) return;
             if (_inanimate.IsDestroyed)
             {
                 _sceneManager.ActiveScene.RemoveEntity(Entity);

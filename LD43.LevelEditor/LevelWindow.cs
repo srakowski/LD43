@@ -177,7 +177,7 @@ namespace LD43.LevelEditor
             foreach (var ina in RVM.Inanimates)
             {
                 Editor.spriteBatch.Draw(
-                    texture: textures["Vase"],
+                    texture: textures[ina.Type],
                     position: ina.Position.ToVector2(),
                     color: Color.White,
                     origin: new Vector2(RVM.SnapTo, RVM.SnapTo) / 2f

@@ -1,5 +1,6 @@
 ﻿using LD43.Engine;
 using System;
+using System.Linq;
 
 namespace LD43.Gameplay.Behaviors
 {
@@ -18,6 +19,12 @@ namespace LD43.Gameplay.Behaviors
         public override void Update()
         {
             _gs.DecrementSacrficeTimer(Delta);            
+            if (_gs.IsSacrificeOverdue())
+            {
+                _gs.Player.Kill("You were smote for not collecting the sacrifice fast enough.");
+                return;
+            }
+
             SetHudText();
         }
 

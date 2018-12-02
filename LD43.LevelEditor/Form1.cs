@@ -102,6 +102,8 @@ namespace LD43.LevelEditor
 
         private void inanimatesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            modeComboBox.SelectedIndex = modeComboBox.Items.IndexOf("Inanimate");
+            model.Mode = "Inanimate";
             model.InanimateType = inanimatesListBox.SelectedItem as string;
         }
 

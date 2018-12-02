@@ -26,9 +26,10 @@ namespace LD43.Gameplay.Behaviors
 
         public override void Update()
         {
+            if (_gs.IsGameOver) return;
             if (_gs.Player.Bounds.Contains(Entity.Transform.Position))
             {
-                _gs.Player.Hit(_dmg);
+                _gs.Player.Hit();
             }
 
             Entity.Transform.Position += (_velocity * Delta);

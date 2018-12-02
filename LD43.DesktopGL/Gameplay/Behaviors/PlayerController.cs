@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using LD43.Gameplay.Scenes;
 
 namespace LD43.Gameplay.Behaviors
 {
@@ -21,6 +23,8 @@ namespace LD43.Gameplay.Behaviors
         private bool _isSwingingWeapon = false;
         private bool _isKnockingBack = false;
         private int? _ignorePlatformsUntilY = null;
+        private bool _dead = false;
+        private bool _win = false;
 
         public PlayerController(GameplayState gameplayState)
         {
@@ -30,11 +34,28 @@ namespace LD43.Gameplay.Behaviors
         public override void Initialize()
         {
             base.Initialize();
-            _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
+            _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);            
         }
 
         public override void Update()
         {
+            if (_gs.YouWin && !_win)
+            {
+                _win = true;
+                StartCoroutine(Win());
+            }
+
+            if (_win) return;
+
+
+            if (_gs.Player.IsDead && !_dead)
+            {
+                _dead = true;
+                StartCoroutine(Death());
+            }
+
+            if (_dead) return;
+
             if (_gs.Player.GotHit)
             {
                 StartCoroutine(HandleKnockback());
@@ -75,9 +96,17 @@ namespace LD43.Gameplay.Behaviors
         private IEnumerator SwingWeapon()
         {
             _isSwingingWeapon = true;
+            ExecuteAttack();
+            yield return WaitYieldInstruction.Create(SwingTime);
+            ExecuteAttack();
+            _isSwingingWeapon = false;
+        }
+
+        private void ExecuteAttack()
+        {
             var destroyedInanimates = _gs.CurrentRoom.Inanimates
-                .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
-                .Where(i => IsFacing(i.Position));
+                            .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
+                            .Where(i => IsFacing(i.Position));
             if (destroyedInanimates.Any())
             {
                 _gs.CurrentRoom.DestroyInanimates(destroyedInanimates);
@@ -90,9 +119,6 @@ namespace LD43.Gameplay.Behaviors
             {
                 _gs.CurrentRoom.HitEnemies(hitEnemies);
             }
-
-            yield return WaitYieldInstruction.Create(SwingTime);
-            _isSwingingWeapon = false;
         }
 
         private void PickupDrops()
@@ -167,7 +193,8 @@ namespace LD43.Gameplay.Behaviors
             var tiles = _gs.CurrentRoom
                 .GetTilesNear(newPlayerPosition)
                 .Where(t => (t.Tag as TileTag).IsImpassable ||
-                    ((t.Tag as TileTag).IsPlatform && playerBounds.Bottom < (t.Bounds.Top + 1)));
+                    ((t.Tag as TileTag).IsPlatform && playerBounds.Bottom < (t.Bounds.Top + 1)))
+                .OrderBy(t => (t.Tag as TileTag).IsImpassable ? 0 : 1);
 
             if (!tiles.Any() || !tiles.Any(t => t.Bounds.Intersects(targetBounds)))
             {
@@ -281,6 +308,42 @@ namespace LD43.Gameplay.Behaviors
             return
                 (pos.X < bounds.Right && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
                 (pos.X > bounds.Left && _gs.Player.FacingDirection == Models.FacingDirection.Right);
+        }
+
+        private IEnumerator Win()
+        {
+            var sm = Services.GetService<SceneManager>();
+            Services.GetService<RenderingManager>().Layers.Where(l => l.Name != "Player").ToList().ForEach(l => l.Show = false);
+            var e = new Entity();
+            e.Transform.Position = Entity.Transform.Position + new Vector2(0, 200);
+            e.AddComponent(new SpriteTextRenderer("GenericFont")
+            {
+                Text = $"You have completed all required sacrifices and have won the game.\nSee you next Ludum Dare!\nPress [Enter] to play again...",
+                Layer = "Player",
+                Center = true,
+            });
+            sm.ActiveScene.AddEntity(e);
+            yield return WaitYieldInstruction.Create(500);
+            while (!Input.GetControl<Button>(Controls.Continue).IsDown()) yield return null;
+            sm.Load(typeof(RoomScene), GameplayState.Create());
+        }
+
+        private IEnumerator Death()
+        {
+            var sm = Services.GetService<SceneManager>();
+            Services.GetService<RenderingManager>().Layers.Where(l => l.Name != "Player").ToList().ForEach(l => l.Show = false);
+            var e = new Entity();
+            e.Transform.Position = Entity.Transform.Position + new Vector2(0, 200);
+            e.AddComponent(new SpriteTextRenderer("GenericFont")
+            {
+                Text = $"You have died.\n{_gs.Player.ReasonForDeath}\nPress [Enter] to play again...",
+                Layer = "Player",
+                Center = true,
+            });
+            sm.ActiveScene.AddEntity(e);
+            yield return WaitYieldInstruction.Create(500);
+            while (!Input.GetControl<Button>(Controls.Continue).IsDown()) yield return null;
+            sm.Load(typeof(RoomScene), GameplayState.Create());
         }
     }
 }

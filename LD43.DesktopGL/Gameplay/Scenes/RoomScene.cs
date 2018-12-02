@@ -2,7 +2,6 @@
 using LD43.Gameplay.Behaviors;
 using LD43.Gameplay.Models;
 using Microsoft.Xna.Framework;
-using System;
 using System.Linq;
 
 namespace LD43.Gameplay.Scenes
@@ -60,6 +59,14 @@ namespace LD43.Gameplay.Scenes
                     e.AddComponent(new InanimateController(gs, inanimate));
                     e.Transform.Position = inanimate.Position + new Vector2(64, 64);
                     return e;
+                },
+                sacrificialFirePit: () =>
+                {
+                    var e = new Entity();
+                    e.AddComponent(new SpriteRenderer("SacrificialFirePit") { Layer = "Inanimates" });
+                    e.AddComponent(new SacrificePitController(gs));
+                    e.Transform.Position = inanimate.Position + new Vector2(128, 128);
+                    return e;
                 }
             );
 
@@ -71,7 +78,7 @@ namespace LD43.Gameplay.Scenes
                     e.Transform.Position = enemy.Position + new Vector2(64, 64);
                     e.AddComponent(new SpriteRenderer("StarEnemy") { Layer = "Enemies" });
                     e.AddComponent(new EnemyController(gs, enemy));
-                    e.AddComponent(new ProjectileSpawner(
+                    e.AddComponent(new ProjectileSpawner(gs,
                         new SequencedCircularProjectileSpawnerStrategy(12, gs.Random.Next(3000), 200, 10000),
                         (pos, dir) =>
                         {
