@@ -42,6 +42,7 @@ namespace LD43.Gameplay.Models
                             RoomPosition = new Point(xt, yt),
                             IsImpassable = roomTile.TextureName == "Tile_FG",
                             IsPlatform = roomTile.TextureName == "Tile_PF",
+                            SpawnGroup = roomTile.SpawnGroup,
                         });
                 }
             Tilemap = tm;
@@ -151,6 +152,31 @@ namespace LD43.Gameplay.Models
                 })
                 .ToList()
                 .ForEach(t => Tilemap[t.Pos.X, t.Pos.Y] = t.Tile);
+        }
+
+        public void Populate(GameplayState gs)
+        {
+            var spawnGroups = Flatten(Tilemap)
+                .GroupBy(t => (t.Tag as TileTag).SpawnGroup)
+                .Where(t => t.Key != 0);
+
+            foreach (var spawnGroup in spawnGroups)
+            {
+                var si = gs.Random.Next(100) < 20;
+                var se = gs.Random.Next(100) < 20;
+                if (!spawnGroup.Any()) continue;
+                var tileQueue = new Queue<Tile>(spawnGroup.OrderBy(sg => gs.Random.Next(100)));
+                if (si)
+                {
+                    var tile = tileQueue.Dequeue();
+                    _inanimates.Add(new Inanimate(tile.Bounds.Location.ToVector2(), InanimateType.Vase, gs));
+                }
+                if (se && tileQueue.Count() > 0)
+                {
+                    var tile = tileQueue.Dequeue();
+                    _enemies.Add(new Enemy(tile.Bounds.Location.ToVector2(), EnemyType.StarEnemy, gs));
+                }
+            }
         }
 
         private static IEnumerable<Tile> Flatten<Tile>(Tile[,] map)

@@ -1,19 +1,16 @@
 ﻿using LD43.Engine;
+using LD43.Gameplay.Models;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using System.Collections;
-using LD43.Gameplay.Models;
-using System.Diagnostics;
 
 namespace LD43.Gameplay.Behaviors
 {
     public class PlayerController : Behavior
     {
         private const int RecoupTime = 1000;
-        private const int SwingRadius = 200;
+        private const int SwingRadius = 256;
         private const int SwingTime = 200;
         private const float _gravity = 0.009f;
         private readonly GameplayState _gs;
@@ -61,7 +58,7 @@ namespace LD43.Gameplay.Behaviors
         {
             _isKnockingBack = true;
             _gs.Player.GotHit = false;
-            _gs.Player.IsInvulnerable = true;            
+            _gs.Player.IsInvulnerable = true;
             _verticalSpeed = -2;
             _horizontalSpeed = _gs.Player.FacingDirection == Models.FacingDirection.Right ? -1 : 1;
             _grounded = false;
@@ -117,6 +114,12 @@ namespace LD43.Gameplay.Behaviors
 
         private void HandleMovement()
         {
+            if (Input.GetControl<Button>(Controls.ResetPosition).IsDown())
+            {
+                Entity.Transform.Position = _gs.CurrentRoom.PlayerStartPosition;
+                return;
+            }
+
             var newPlayerPosition = Entity.Transform.Position;
 
             _verticalSpeed += (_gravity * Delta);
@@ -137,13 +140,19 @@ namespace LD43.Gameplay.Behaviors
 
             if (Input.GetControl<Button>(Controls.MoveLeft).IsDown() && !_isKnockingBack)
             {
-                newPlayerPosition += (new Vector2(-1, 0) * Delta);
+                if (_gs.Player.FacingDirection == Models.FacingDirection.Left)
+                {
+                    newPlayerPosition += (new Vector2(-1, 0) * Delta);
+                }
                 _gs.Player.FacingDirection = Models.FacingDirection.Left;
             }
 
             if (Input.GetControl<Button>(Controls.MoveRight).IsDown() && !_isKnockingBack)
             {
-                newPlayerPosition += (new Vector2(1, 0) * Delta);
+                if (_gs.Player.FacingDirection == Models.FacingDirection.Right)
+                {
+                    newPlayerPosition += (new Vector2(1, 0) * Delta);
+                }
                 _gs.Player.FacingDirection = Models.FacingDirection.Right;
             }
 
@@ -157,7 +166,7 @@ namespace LD43.Gameplay.Behaviors
 
             var tiles = _gs.CurrentRoom
                 .GetTilesNear(newPlayerPosition)
-                .Where(t => (t.Tag as TileTag).IsImpassable || 
+                .Where(t => (t.Tag as TileTag).IsImpassable ||
                     ((t.Tag as TileTag).IsPlatform && playerBounds.Bottom < (t.Bounds.Top + 1)));
 
             if (!tiles.Any() || !tiles.Any(t => t.Bounds.Intersects(targetBounds)))
@@ -258,8 +267,8 @@ namespace LD43.Gameplay.Behaviors
         }
 
         private static Rectangle CalculateBounds(Vector2 p)
-        {            
-            var r =  new Rectangle(
+        {
+            var r = new Rectangle(
                 (p + new Vector2(-64, -96)).ToPoint(),
                 new Point(128, 192)
             );
@@ -269,7 +278,7 @@ namespace LD43.Gameplay.Behaviors
         private bool IsFacing(Vector2 pos)
         {
             var bounds = CalculateBounds(Entity.Transform.Position);
-            return 
+            return
                 (pos.X < bounds.Right && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
                 (pos.X > bounds.Left && _gs.Player.FacingDirection == Models.FacingDirection.Right);
         }

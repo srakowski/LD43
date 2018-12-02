@@ -58,7 +58,7 @@ namespace LD43.Gameplay.Scenes
                     var e = new Entity();
                     e.AddComponent(new SpriteRenderer("Vase") { Layer = "Inanimates" });
                     e.AddComponent(new InanimateController(gs, inanimate));
-                    e.Transform.Position = inanimate.Position;
+                    e.Transform.Position = inanimate.Position + new Vector2(64, 64);
                     return e;
                 }
             );
@@ -68,11 +68,11 @@ namespace LD43.Gameplay.Scenes
                 star: () =>
                 {
                     var e = new Entity();
-                    e.Transform.Position = enemy.Position;
+                    e.Transform.Position = enemy.Position + new Vector2(64, 64);
                     e.AddComponent(new SpriteRenderer("StarEnemy") { Layer = "Enemies" });
                     e.AddComponent(new EnemyController(gs, enemy));
                     e.AddComponent(new ProjectileSpawner(
-                        new SequencedCircularProjectileSpawnerStrategy(12, 200, 10000),
+                        new SequencedCircularProjectileSpawnerStrategy(12, gs.Random.Next(3000), 200, 10000),
                         (pos, dir) =>
                         {
                             var proj = new Entity();

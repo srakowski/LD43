@@ -41,22 +41,27 @@ namespace LD43.Gameplay.Behaviors
     {
         private int _count;
 
+        private int _delay;
+
         private int _sequenceFrequencyInMS;
 
         private int _frequencyInMS;
 
         public SequencedCircularProjectileSpawnerStrategy(
             int count,
+            int initialDelayInMS,
             int sequenceFrequencyInMS,
             int frequencyInMS)
         {
             _count = count;
+            _delay = initialDelayInMS;
             _sequenceFrequencyInMS = sequenceFrequencyInMS;
             _frequencyInMS = frequencyInMS;
         }
 
         public override IEnumerator Begin(ProjectileSpawner projectileSpawner)
         {
+            yield return WaitYieldInstruction.Create(_delay);
             while (true)
             {
                 var degreesPerSpawn = 360 / _count;

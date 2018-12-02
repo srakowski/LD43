@@ -57,6 +57,7 @@ namespace LD43.Gameplay
             rooms.Add(Point.Zero, new Room(config1, Point.Zero, this));
             ExpandDungeon(rooms, configs, Point.Zero);
             CloseEntries(rooms);
+            foreach (var room in rooms.Values) room.Populate(this);
             return rooms.Values.ToArray();
         }
 
