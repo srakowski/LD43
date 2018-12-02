@@ -31,7 +31,7 @@ namespace LD43.Gameplay.Behaviors
                 if (_enemy.GoldValue > 0)
                 {
                     var drop = new GoldDrop(Entity.Transform.Position, _enemy.GoldValue);
-                    _gs.Room.AddDrop(drop);
+                    _gs.CurrentRoom.AddDrop(drop);
                     var ge = new Entity();
                     ge.AddComponent(new SpriteRenderer("GoldDrop"));
                     ge.AddComponent(new DropController(drop));
@@ -40,7 +40,7 @@ namespace LD43.Gameplay.Behaviors
                 }
 
                 var soulDrop = new SoulDrop(Entity.Transform.Position);
-                _gs.Room.AddDrop(soulDrop);
+                _gs.CurrentRoom.AddDrop(soulDrop);
                 var se = new Entity();
                 se.AddComponent(new SpriteRenderer("SoulDrop"));
                 se.AddComponent(new DropController(soulDrop));

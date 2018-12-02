@@ -46,7 +46,7 @@ namespace LD43.Engine
 
         public override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             if (_sceneManager.ActiveScene == null) return;
 

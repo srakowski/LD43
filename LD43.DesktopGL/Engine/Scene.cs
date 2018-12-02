@@ -32,5 +32,10 @@ namespace LD43.Engine
             var entitiesToActivate = _entities.ToList();
             entitiesToActivate.ForEach(e => e.Activate(_services));
         }
+
+        internal void Deactivate()
+        {
+            _entities.Clear();
+        }
     }
 }

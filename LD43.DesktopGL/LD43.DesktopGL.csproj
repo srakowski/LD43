@@ -64,6 +64,7 @@
     <Compile Include="Gameplay\Behaviors\PlayerController.cs" />
     <Compile Include="Gameplay\Behaviors\ProjectileController.cs" />
     <Compile Include="Gameplay\Behaviors\ProjectileSpawner.cs" />
+    <Compile Include="Gameplay\Behaviors\RoomController.cs" />
     <Compile Include="Gameplay\Behaviors\SacrificeUpdater.cs" />
     <Compile Include="Gameplay\Content.cs" />
     <Compile Include="Gameplay\Controls.cs" />
@@ -147,6 +148,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="Content\GenericFont.spritefont" />
+    <Content Include="Content\Rooms\room2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

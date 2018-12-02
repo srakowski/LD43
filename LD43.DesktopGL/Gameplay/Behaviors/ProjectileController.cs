@@ -32,7 +32,7 @@ namespace LD43.Gameplay.Behaviors
             }
 
             Entity.Transform.Position += (_velocity * Delta);
-            if (!_gs.Room.Bounds.Contains(Entity.Transform.Position))
+            if (!_gs.CurrentRoom.Bounds.Contains(Entity.Transform.Position))
             {
                 _screenManager.ActiveScene.RemoveEntity(Entity);
             }

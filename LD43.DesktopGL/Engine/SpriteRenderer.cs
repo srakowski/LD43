@@ -62,6 +62,8 @@ namespace LD43.Engine
 
         public override void Draw(SpriteBatch spriteBatch, Dictionary<string, object> assetCatalog)
         {
+            if (Text == null) return;
+
             if (_fontCache.Key != SpriteFontName)
             {
                 _fontCache = new KeyValuePair<string, SpriteFont>(

@@ -1,11 +1,22 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using LD43.Engine;
+using LD43.Gameplay.Behaviors;
+using Microsoft.Xna.Framework;
 
 namespace LD43.Gameplay.Models
 {
-    public class Player
+    public class Player : Entity
     {
-        public Vector2 Position { get; set; }
+        public Player(GameplayState gs)
+        {
+            AddComponent(new SpriteRenderer("PlayerPlaceholder") { Layer = "Player" });
+            AddComponent(new PlayerController(gs));
+        }
+
+        public Vector2 Position
+        {
+            get => Transform.Position;
+            set => Transform.Position = value;
+        }
 
         public Rectangle Bounds { get; set; }
 
@@ -35,11 +46,6 @@ namespace LD43.Gameplay.Models
             HP -= dmg;
             if (HP < 0) HP = 0;
             GotHit = true;
-        }
-
-        internal void Hit(object damage)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace LD43.Gameplay.Behaviors
                 if (_inanimate.GoldValue > 0)
                 {
                     var drop = new GoldDrop(Entity.Transform.Position, _inanimate.GoldValue);
-                    _gs.Room.AddDrop(drop);
+                    _gs.CurrentRoom.AddDrop(drop);
 
                     var e = new Entity();
                     e.AddComponent(new SpriteRenderer("GoldDrop"));

@@ -18,7 +18,6 @@ namespace LD43.Gameplay.Behaviors
         private float _verticalSpeed = 0f;
         private float _horizontalSpeed = 0f;
         private bool _onPlatform = false;
-        private bool _flyMode = false;
         private bool _isSwingingWeapon = false;
         private bool _isKnockingBack = false;
 
@@ -30,7 +29,6 @@ namespace LD43.Gameplay.Behaviors
         public override void Initialize()
         {
             base.Initialize();
-            _gs.Player.Position = Entity.Transform.Position;
             _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
         }
 
@@ -52,8 +50,6 @@ namespace LD43.Gameplay.Behaviors
             }
 
             HandleMovement();
-
-            _gs.Player.Position = Entity.Transform.Position;
             _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
         }
 
@@ -78,20 +74,20 @@ namespace LD43.Gameplay.Behaviors
         private IEnumerator SwingWeapon()
         {
             _isSwingingWeapon = true;
-            var destroyedInanimates = _gs.Room.Inanimates
+            var destroyedInanimates = _gs.CurrentRoom.Inanimates
                 .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
                 .Where(i => IsFacing(i.Position));
             if (destroyedInanimates.Any())
             {
-                _gs.Room.DestroyInanimates(destroyedInanimates);
+                _gs.CurrentRoom.DestroyInanimates(destroyedInanimates);
             }
 
-            var hitEnemies = _gs.Room.Enemies
+            var hitEnemies = _gs.CurrentRoom.Enemies
                 .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
                 .Where(i => IsFacing(i.Position));
             if (hitEnemies.Any())
             {
-                _gs.Room.HitEnemies(hitEnemies);
+                _gs.CurrentRoom.HitEnemies(hitEnemies);
             }
 
             yield return WaitYieldInstruction.Create(SwingTime);
@@ -101,7 +97,7 @@ namespace LD43.Gameplay.Behaviors
         private void PickupDrops()
         {
             var bounds = CalculateBounds(Entity.Transform.Position);
-            _gs.Room.Drops
+            _gs.CurrentRoom.Drops
                 .Where(d => bounds.Contains(d.Position))
                 .ToList()
                 .ForEach(d =>
@@ -111,68 +107,41 @@ namespace LD43.Gameplay.Behaviors
                         soulDrop: s => new { GoldToAdd = 0, SoulsToAdd = s.Value }
                     );
                     _gs.Player.Pickup(r.GoldToAdd, r.SoulsToAdd);
-                    _gs.Room.PickupDrop(d);
+                    _gs.CurrentRoom.PickupDrop(d);
                 });
         }
 
         private void HandleMovement()
         {
             var newPlayerPosition = Entity.Transform.Position;
-            var kb = Keyboard.GetState();
-            if (InputManager.PrevKBState.IsKeyDown(Keys.F) && InputManager.CurrKBState.IsKeyUp(Keys.F))
+
+            _verticalSpeed += (_gravity * Delta);
+            if (_verticalSpeed > 9.8f) _verticalSpeed = 9.8f;
+
+            if (_onPlatform && Input.GetControl<Button>(Controls.Jump).IsDown() && !_isKnockingBack)
             {
-                _flyMode = !_flyMode;
+                _verticalSpeed = -3.1f;
+                _onPlatform = false;
             }
-            if (_flyMode)
+
+            newPlayerPosition += (new Vector2(_horizontalSpeed, _verticalSpeed) * Delta);
+
+            if (Input.GetControl<Button>(Controls.MoveLeft).IsDown() && !_isKnockingBack)
             {
-                _verticalSpeed = 0f;
-                if (kb.IsKeyDown(Keys.Up))
-                {
-                    newPlayerPosition += (new Vector2(0, -1f) * Delta);
-                }
-                if (kb.IsKeyDown(Keys.Down))
-                {
-                    newPlayerPosition += (new Vector2(0, 1f) * Delta);
-                }
-                if (kb.IsKeyDown(Keys.Left))
-                {
-                    newPlayerPosition += (new Vector2(-1f, 0) * Delta);
-                }
-                if (kb.IsKeyDown(Keys.Right))
-                {
-                    newPlayerPosition += (new Vector2(1f, 0) * Delta);
-                }
+                newPlayerPosition += (new Vector2(-1, 0) * Delta);
+                _gs.Player.FacingDirection = Models.FacingDirection.Left;
             }
-            else
+
+            if (Input.GetControl<Button>(Controls.MoveRight).IsDown() && !_isKnockingBack)
             {
-                _verticalSpeed += (_gravity * Delta);
-                if (_verticalSpeed > 9.8f) _verticalSpeed = 9.8f;
-
-                if (_onPlatform && Input.GetControl<Button>(Controls.Jump).IsDown() && !_isKnockingBack)
-                {
-                    _verticalSpeed = -3.1f;
-                    _onPlatform = false;
-                }
-
-                newPlayerPosition += (new Vector2(_horizontalSpeed, _verticalSpeed) * Delta);
-
-                if (Input.GetControl<Button>(Controls.MoveLeft).IsDown() && !_isKnockingBack)
-                {
-                    newPlayerPosition += (new Vector2(-1, 0) * Delta);
-                    _gs.Player.FacingDirection = Models.FacingDirection.Left;
-                }
-
-                if (Input.GetControl<Button>(Controls.MoveRight).IsDown() && !_isKnockingBack)
-                {
-                    newPlayerPosition += (new Vector2(1, 0) * Delta);
-                    _gs.Player.FacingDirection = Models.FacingDirection.Right;
-                }
+                newPlayerPosition += (new Vector2(1, 0) * Delta);
+                _gs.Player.FacingDirection = Models.FacingDirection.Right;
             }
 
             var playerBounds = CalculateBounds(Entity.Transform.Position);
             var targetBounds = CalculateBounds(newPlayerPosition);
 
-            var tiles = _gs.Room
+            var tiles = _gs.CurrentRoom
                 .GetTilesNear(newPlayerPosition)
                 .Where(t => t.IsImpassable);
 

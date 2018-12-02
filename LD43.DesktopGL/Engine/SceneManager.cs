@@ -19,6 +19,7 @@ namespace LD43.Engine
 
         public void Load(Type sceneType, object state)
         {
+            ActiveScene?.Deactivate();
             ActiveScene = _sceneCatalog[sceneType](state);
             ActiveScene.Activate(Game.Services);            
         }
