@@ -10,6 +10,10 @@
         {
             return new[]
             {
+                new Layer("Inanimates", 25),
+
+                new Layer("Player", 50),
+
                 new Layer("Hud", 100, stickToCamera: true),
             };
         }

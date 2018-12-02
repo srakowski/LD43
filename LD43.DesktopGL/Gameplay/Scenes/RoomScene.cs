@@ -2,6 +2,7 @@
 using LD43.Gameplay.Behaviors;
 using LD43.Gameplay.Models;
 using Microsoft.Xna.Framework;
+using System;
 using System.Linq;
 
 namespace LD43.Gameplay.Scenes
@@ -14,7 +15,7 @@ namespace LD43.Gameplay.Scenes
 
             var s = new RoomScene();
 
-            var room = new Room(Content.GetAssetCatalog()["Rooms/room"] as RoomConfig);
+            var room = new Room(Content.GetAssetCatalog()["Rooms/room"] as RoomConfig, gs);
             gs.Room = room;
 
             var map = new Entity();
@@ -25,11 +26,20 @@ namespace LD43.Gameplay.Scenes
             ));
             s.AddEntity(map);
 
+            room.Inanimates
+                .Select(i => InanimateEntity(gs, i))
+                .ToList()
+                .ForEach(i => s.AddEntity(i));
+
             var player = new Entity();
-            player.AddComponent(new SpriteRenderer("PlayerPlaceholder"));
+            player.AddComponent(new SpriteRenderer("PlayerPlaceholder")
+            {
+                Layer = "Player",
+            });
             player.AddComponent(new PlayerController(gs));
             player.Transform.Position = room.PlayerStartPosition.ToVector2();
             s.AddEntity(player);            
+
 
             var camera = new Entity();
             camera.AddComponent(new Camera());
@@ -48,5 +58,17 @@ namespace LD43.Gameplay.Scenes
 
             return s;
         }
+
+        private static Entity InanimateEntity(GameplayState gs, Inanimate inanimate) =>
+            inanimate.Type.Match(
+                vase: () =>
+                {
+                    var e = new Entity();
+                    e.AddComponent(new SpriteRenderer("Vase") { Layer = "Inanimates" });
+                    e.AddComponent(new InanimateController(gs, inanimate));
+                    e.Transform.Position = inanimate.Position;
+                    return e;
+                }
+            );
     }
 }

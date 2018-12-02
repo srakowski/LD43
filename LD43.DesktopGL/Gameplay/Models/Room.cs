@@ -1,14 +1,16 @@
 ﻿using LD43.Engine;
 using Microsoft.Xna.Framework;
 using System.Linq;
-using System;
 using System.Collections.Generic;
+using System;
 
 namespace LD43.Gameplay.Models
 {
     public class Room
     {
-        public Room(RoomConfig config)
+        private List<Inanimate> _inanimates;
+
+        public Room(RoomConfig config, GameplayState gs)
         {
             PlayerStartPosition = config.PlayerStartPosition;
 
@@ -30,6 +32,11 @@ namespace LD43.Gameplay.Models
                     tm[x, y] = new Tile(new Rectangle(x * TileSize, y * TileSize, TileSize, TileSize), roomTile.TextureName);
                 }
             Tilemap = tm;
+
+            _inanimates = config.Inanimates.Select(i => new Inanimate(
+                i.Position.ToVector2(),
+                i.Type,
+                gs)).ToList();
         }
 
         public Point PlayerStartPosition { get; }
@@ -39,6 +46,8 @@ namespace LD43.Gameplay.Models
         public int TileSize { get; }
 
         public Tile[,] Tilemap { get; }
+
+        public IEnumerable<Inanimate> Inanimates => _inanimates.ToArray();
 
         public IEnumerable<Tile> GetTilesNear(Vector2 position)
         {
@@ -53,5 +62,29 @@ namespace LD43.Gameplay.Models
                 }
             return tiles;
         }
+
+        public void DestroyInanimates(IEnumerable<Inanimate> destroyedInanimates)
+        {
+            foreach (var i in destroyedInanimates)
+            {
+                i.IsDestroyed = true;
+                _inanimates.Remove(i);
+            }
+        }
+    }
+
+    public class Inanimate
+    {
+        public Inanimate(Vector2 pos, InanimateType type, GameplayState gs)
+        {
+            Position = pos;
+            Type = type;
+        }
+
+        public Vector2 Position { get; }
+
+        public InanimateType Type { get; }
+
+        public bool IsDestroyed { get; set; }
     }
 }

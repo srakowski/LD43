@@ -67,7 +67,7 @@ namespace LD43.Engine
             foreach (var layer in _layers)
             {
                 var renderersThisLayer = renderersByLayer.FirstOrDefault(r => r.Key == layer.Name)?.ToList();
-                if (renderersByLayer == null) continue;
+                if (renderersThisLayer == null || !renderersThisLayer.Any()) continue;
                 var layerCamera = renderersThisLayer.OfType<Camera>().FirstOrDefault(c => c != globalCamera) ?? globalCamera;
                 layer.Begin(_spriteBatch, globalCamera?.Entity?.Transform);
                 renderersThisLayer.ForEach(r => r.Draw(_spriteBatch, _assetCatalog));

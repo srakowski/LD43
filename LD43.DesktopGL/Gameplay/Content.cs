@@ -23,6 +23,7 @@ namespace LD43.Gameplay
             Texture("PlatformPlaceholder");
             Texture("Tile_BG");
             Texture("Tile_FG");
+            Texture("Vase");
 
             Room("Rooms/room");
 

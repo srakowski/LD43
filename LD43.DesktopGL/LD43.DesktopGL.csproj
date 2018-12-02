@@ -57,12 +57,16 @@
     <Compile Include="Engine\Transform.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Gameplay\Behaviors\CameraController.cs" />
+    <Compile Include="Gameplay\Behaviors\InanimateController.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerController.cs" />
     <Compile Include="Gameplay\Behaviors\SacrificeTimerUpdater.cs" />
     <Compile Include="Gameplay\Content.cs" />
     <Compile Include="Gameplay\Controls.cs" />
     <Compile Include="Gameplay\GameplayState.cs" />
     <Compile Include="Gameplay\Layers.cs" />
+    <Compile Include="Gameplay\Models\FacingDirection.cs" />
+    <Compile Include="Gameplay\Models\InanimateType.cs" />
+    <Compile Include="Gameplay\Models\Player.cs" />
     <Compile Include="Gameplay\Models\Room.cs" />
     <Compile Include="Gameplay\Models\RoomConfig.cs" />
     <Compile Include="Gameplay\Scenes\Catalog.cs" />

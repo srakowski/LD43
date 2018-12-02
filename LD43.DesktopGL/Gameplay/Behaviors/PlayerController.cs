@@ -3,16 +3,20 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using System.Collections;
 
 namespace LD43.Gameplay.Behaviors
 {
     public class PlayerController : Behavior
-    {        
+    {
+        private const int SwingRadius = 192;
         private const float _gravity = 0.009f;
         private readonly GameplayState _gs;
         private float _verticalSpeed = 0f;
         private bool _onPlatform = false;
         private bool _flyMode = false;
+        private bool _isSwingingWeapon = false;
 
         public PlayerController(GameplayState gameplayState)
         {
@@ -21,8 +25,12 @@ namespace LD43.Gameplay.Behaviors
 
         public override void Update()
         {
-            var newPlayerPosition = Entity.Transform.Position;
+            if (Input.GetControl<Button>(Controls.SwingWeapon).IsDown())
+            {
+                StartCoroutine(SwingingWeapon());
+            }
 
+            var newPlayerPosition = Entity.Transform.Position;
             var kb = Keyboard.GetState();
             if (InputManager.PrevKBState.IsKeyDown(Keys.F) && InputManager.CurrKBState.IsKeyUp(Keys.F))
             {
@@ -86,6 +94,24 @@ namespace LD43.Gameplay.Behaviors
             }
             
             Entity.Transform.Position = StepToNewPosition(newPlayerPosition, tiles);
+        }
+
+        private IEnumerator SwingingWeapon()
+        {
+            _isSwingingWeapon = true;
+            var destroyedInanimates = _gs.Room
+                .Inanimates
+                .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
+                .Where(i =>
+                    (i.Position.X < Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
+                    (i.Position.X > Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Right)
+                );
+            if (destroyedInanimates.Any())
+            {
+                _gs.Room.DestroyInanimates(destroyedInanimates);
+            }
+            yield return WaitYieldInstruction.Create(400);
+            _isSwingingWeapon = false;
         }
 
         private Vector2 StepToNewPosition(Vector2 newPlayerPosition, IEnumerable<Tile> tiles)

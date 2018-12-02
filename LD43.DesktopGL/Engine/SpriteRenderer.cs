@@ -14,6 +14,8 @@ namespace LD43.Engine
 
         public Color Color { get; set; } = Color.White;
 
+        public bool Center { get; set; } = true;
+
         public SpriteRenderer(string textureName)
         {
             TextureName = textureName;
@@ -35,7 +37,7 @@ namespace LD43.Engine
                 texture: _textureCache.Value,
                 position: transform.Position,
                 color: Color,
-                origin: _textureCache.Value.Bounds.Center.ToVector2()
+                origin: Center ? _textureCache.Value.Bounds.Center.ToVector2() : Vector2.Zero
             );
         }
     }

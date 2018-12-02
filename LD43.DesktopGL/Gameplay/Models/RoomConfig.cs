@@ -5,7 +5,7 @@ namespace LD43.Gameplay.Models
 {
     public class RoomConfig
     {
-        public int TileSize => 128;
+        public int TileSize { get; set; }
 
         public int SizeX { get; set; }
 
@@ -13,12 +13,20 @@ namespace LD43.Gameplay.Models
 
         public IEnumerable<Tile> Tiles { get; set; }
 
+        public IEnumerable<Inanimate> Inanimates { get; set; }
+
         public Point PlayerStartPosition { get; set; }
 
         public class Tile
         {
             public Point Position { get; set; }
             public string TextureName { get; set; }
+        }
+
+        public class Inanimate
+        {
+            public Point Position { get; set; }
+            public InanimateType Type { get; set; }
         }
     }
 }
