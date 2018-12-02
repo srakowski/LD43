@@ -8,6 +8,7 @@ namespace LD43.Gameplay.Models
 {
     public class Room
     {
+        private List<Enemy> _enemies;
         private List<Inanimate> _inanimates;
 
         private List<Drop> _drops = new List<Drop>();
@@ -39,6 +40,11 @@ namespace LD43.Gameplay.Models
                 i.Position.ToVector2(),
                 i.Type,
                 gs)).ToList();
+
+            _enemies = config.Enemies.Select(e => new Enemy(
+                e.Position.ToVector2(),
+                e.Type,
+                gs)).ToList();
         }
 
         public Point PlayerStartPosition { get; }
@@ -50,6 +56,8 @@ namespace LD43.Gameplay.Models
         public Tile[,] Tilemap { get; }
 
         public IEnumerable<Inanimate> Inanimates => _inanimates.ToArray();
+
+        public IEnumerable<Enemy> Enemies => _enemies.ToArray();
 
         public IEnumerable<Drop> Drops => _drops.ToArray();
 
@@ -86,6 +94,15 @@ namespace LD43.Gameplay.Models
             drop.IsPickedUp = true;
             _drops.Remove(drop);
         }
+
+        public void HitEnemies(IEnumerable<Enemy> hitEnemies)
+        {
+            foreach (var e in hitEnemies)
+            {
+                e.IsDead = true;
+                _enemies.Remove(e);
+            }
+        }
     }
 
     public class Inanimate
@@ -104,5 +121,28 @@ namespace LD43.Gameplay.Models
         public bool IsDestroyed { get; set; }
 
         public int GoldValue { get; }
+    }
+
+    public class Enemy
+    {
+        public Enemy(Vector2 pos, EnemyType type, GameplayState gs)
+        {
+            Position = pos;
+            Type = type;
+            GoldValue = gs.Random.Next(10);
+            Damage = type.Match(
+                star: () => 20
+            );
+        }
+
+        public Vector2 Position { get; }
+
+        public EnemyType Type { get; }
+
+        public bool IsDead { get; set; }
+
+        public int GoldValue { get; }
+
+        public int Damage { get; set; }
     }
 }

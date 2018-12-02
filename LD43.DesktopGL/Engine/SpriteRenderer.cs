@@ -37,6 +37,7 @@ namespace LD43.Engine
                 texture: _textureCache.Value,
                 position: transform.Position,
                 color: Color,
+                rotation: transform.Rotation,
                 origin: Center ? _textureCache.Value.Bounds.Center.ToVector2() : Vector2.Zero
             );
         }

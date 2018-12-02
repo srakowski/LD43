@@ -25,6 +25,9 @@ namespace LD43.Gameplay
             Texture("Tile_FG");
             Texture("Vase");
             Texture("GoldDrop");
+            Texture("StarEnemy");
+            Texture("StarEnemy_Shot");
+            Texture("SoulDrop");
 
             Room("Rooms/room");
 

@@ -11,11 +11,13 @@ namespace LD43.Gameplay.Models
 
         public int SizeY { get; set; }
 
+        public Point PlayerStartPosition { get; set; }
+
         public IEnumerable<Tile> Tiles { get; set; }
 
         public IEnumerable<Inanimate> Inanimates { get; set; }
 
-        public Point PlayerStartPosition { get; set; }
+        public IEnumerable<Enemy> Enemies { get; set; }
 
         public class Tile
         {

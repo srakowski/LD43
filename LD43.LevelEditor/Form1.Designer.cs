@@ -38,11 +38,13 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.label2 = new System.Windows.Forms.Label();
-            this.modeComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.levelWindow1 = new LD43.LevelEditor.LevelWindow();
             this.inanimatesListBox = new System.Windows.Forms.ListBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.modeComboBox = new System.Windows.Forms.ListBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.enemiesListBox = new System.Windows.Forms.ListBox();
+            this.levelWindow1 = new LD43.LevelEditor.LevelWindow();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -57,10 +59,12 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.enemiesListBox);
+            this.splitContainer1.Panel1.Controls.Add(this.label5);
+            this.splitContainer1.Panel1.Controls.Add(this.modeComboBox);
             this.splitContainer1.Panel1.Controls.Add(this.label4);
             this.splitContainer1.Panel1.Controls.Add(this.inanimatesListBox);
             this.splitContainer1.Panel1.Controls.Add(this.label3);
-            this.splitContainer1.Panel1.Controls.Add(this.modeComboBox);
             this.splitContainer1.Panel1.Controls.Add(this.label2);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Controls.Add(this.paintComboBox);
@@ -145,15 +149,6 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "Alt Paint";
             // 
-            // modeComboBox
-            // 
-            this.modeComboBox.FormattingEnabled = true;
-            this.modeComboBox.Location = new System.Drawing.Point(16, 25);
-            this.modeComboBox.Name = "modeComboBox";
-            this.modeComboBox.Size = new System.Drawing.Size(256, 21);
-            this.modeComboBox.TabIndex = 8;
-            this.modeComboBox.SelectedIndexChanged += new System.EventHandler(this.modeComboBox_SelectedIndexChanged);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -162,6 +157,51 @@
             this.label3.Size = new System.Drawing.Size(34, 13);
             this.label3.TabIndex = 9;
             this.label3.Text = "Mode";
+            // 
+            // inanimatesListBox
+            // 
+            this.inanimatesListBox.FormattingEnabled = true;
+            this.inanimatesListBox.Location = new System.Drawing.Point(12, 304);
+            this.inanimatesListBox.Name = "inanimatesListBox";
+            this.inanimatesListBox.Size = new System.Drawing.Size(260, 95);
+            this.inanimatesListBox.TabIndex = 10;
+            this.inanimatesListBox.SelectedIndexChanged += new System.EventHandler(this.inanimatesListBox_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(13, 288);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(58, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Inanimates";
+            // 
+            // modeComboBox
+            // 
+            this.modeComboBox.FormattingEnabled = true;
+            this.modeComboBox.Location = new System.Drawing.Point(16, 25);
+            this.modeComboBox.Name = "modeComboBox";
+            this.modeComboBox.Size = new System.Drawing.Size(255, 95);
+            this.modeComboBox.TabIndex = 12;
+            this.modeComboBox.SelectedIndexChanged += new System.EventHandler(this.modeComboBox_SelectedIndexChanged_1);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 144);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(47, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Enemies";
+            // 
+            // enemiesListBox
+            // 
+            this.enemiesListBox.FormattingEnabled = true;
+            this.enemiesListBox.Location = new System.Drawing.Point(16, 160);
+            this.enemiesListBox.Name = "enemiesListBox";
+            this.enemiesListBox.Size = new System.Drawing.Size(255, 95);
+            this.enemiesListBox.TabIndex = 14;
+            this.enemiesListBox.SelectedIndexChanged += new System.EventHandler(this.enemiesListBox_SelectedIndexChanged);
             // 
             // levelWindow1
             // 
@@ -173,24 +213,6 @@
             this.levelWindow1.Text = "levelWindow1";
             this.levelWindow1.TexturesToLoad = null;
             this.levelWindow1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.levelWindow1_MouseClick);
-            // 
-            // inanimatesListBox
-            // 
-            this.inanimatesListBox.FormattingEnabled = true;
-            this.inanimatesListBox.Location = new System.Drawing.Point(12, 399);
-            this.inanimatesListBox.Name = "inanimatesListBox";
-            this.inanimatesListBox.Size = new System.Drawing.Size(260, 95);
-            this.inanimatesListBox.TabIndex = 10;
-            this.inanimatesListBox.SelectedIndexChanged += new System.EventHandler(this.inanimatesListBox_SelectedIndexChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 383);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(58, 13);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Inanimates";
             // 
             // Form1
             // 
@@ -224,9 +246,11 @@
         private System.Windows.Forms.ComboBox paintComboBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox modeComboBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ListBox inanimatesListBox;
+        private System.Windows.Forms.ListBox modeComboBox;
+        private System.Windows.Forms.ListBox enemiesListBox;
+        private System.Windows.Forms.Label label5;
     }
 }
 

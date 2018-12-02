@@ -31,6 +31,11 @@ namespace LD43.Gameplay.Scenes
                 .ToList()
                 .ForEach(i => s.AddEntity(i));
 
+            room.Enemies
+                .Select(i => EnemyEntity(gs, i))
+                .ToList()
+                .ForEach(i => s.AddEntity(i));
+
             var player = new Entity();
             player.AddComponent(new SpriteRenderer("PlayerPlaceholder")
             {
@@ -67,6 +72,29 @@ namespace LD43.Gameplay.Scenes
                     e.AddComponent(new SpriteRenderer("Vase") { Layer = "Inanimates" });
                     e.AddComponent(new InanimateController(gs, inanimate));
                     e.Transform.Position = inanimate.Position;
+                    return e;
+                }
+            );
+
+        private static Entity EnemyEntity(GameplayState gs, Enemy enemy) =>
+            enemy.Type.Match(
+                star: () =>
+                {
+                    var e = new Entity();
+                    e.Transform.Position = enemy.Position;
+                    e.AddComponent(new SpriteRenderer("StarEnemy") { Layer = "Enemies" });
+                    e.AddComponent(new EnemyController(gs, enemy));
+                    e.AddComponent(new ProjectileSpawner(
+                        new SequencedCircularProjectileSpawnerStrategy(12, 200, 10000),
+                        (pos, dir) =>
+                        {
+                            var proj = new Entity();
+                            proj.Transform.Position = pos;
+                            proj.AddComponent(new SpriteRenderer("StarEnemy_Shot") { Layer = "Projectiles" });
+                            proj.AddComponent(new ProjectileController(dir, 0.3f, gs, 10));
+                            return proj;
+                        }
+                    ));
                     return e;
                 }
             );

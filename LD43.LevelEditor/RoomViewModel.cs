@@ -30,6 +30,8 @@ namespace LD43.LevelEditor
 
         public List<InanimateTypeViewModel> Inanimates { get; set; } = new List<InanimateTypeViewModel>();
 
+        public List<EnemyViewModel> Enemies { get; set; } = new List<EnemyViewModel>();
+
         public RoomViewModel()
         {
             for (int r= 0; r < Width; r++)
@@ -59,13 +61,21 @@ namespace LD43.LevelEditor
                 Position = i.Position,
                 Type = (InanimateType)Enum.Parse(typeof(InanimateType), i.Type)
             });
+            room.Enemies = Enemies.Select(i => new RoomConfig.Enemy
+            {
+                Position = i.Position,
+                Type = (EnemyType)Enum.Parse(typeof(EnemyType), i.Type)
+            });
             File.WriteAllText(path, JsonConvert.SerializeObject(room));
         }
 
         public RoomTileViewModel SelectedTile { get; set; }
 
         public string InanimateType { get; internal set; }
-        public int SnapInanimateTo { get; set; } = 64;
+
+        public string EnemyType { get; internal set; }
+
+        public int SnapTo { get; set; } = 64;
 
         public void Select(RoomTileViewModel roomTileViewModel)
         {
@@ -80,6 +90,12 @@ namespace LD43.LevelEditor
     }
 
     public class InanimateTypeViewModel
+    {
+        public string Type { get; set; }
+        public Point Position { get; set; }
+    }
+
+    public class EnemyViewModel
     {
         public string Type { get; set; }
         public Point Position { get; set; }

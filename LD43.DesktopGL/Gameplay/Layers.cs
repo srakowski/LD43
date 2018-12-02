@@ -14,6 +14,10 @@
 
                 new Layer("Player", 50),
 
+                new Layer("Enemies", 75),
+
+                new Layer("Projectiles", 90),
+
                 new Layer("Hud", 100, stickToCamera: true),
             };
         }

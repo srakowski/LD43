@@ -54,6 +54,11 @@ namespace LD43.LevelEditor
             inanimatesListBox.SelectedIndex = 0;
             model.InanimateType = inanimatesListBox.SelectedItem as string;
 
+            enemiesListBox.Items.Clear();
+            enemiesListBox.Items.AddRange(typeof(EnemyType).GetEnumNames());
+            enemiesListBox.SelectedIndex = 0;
+            model.EnemyType = enemiesListBox.SelectedItem as string;
+
             var files = Directory.GetFiles(folderBrowserDialog1.SelectedPath)
                 .Where(f => Path.GetExtension(f).ToLower() == ".png")
                 .Select(f => Path.GetFileNameWithoutExtension(f));
@@ -72,6 +77,7 @@ namespace LD43.LevelEditor
                 "Tile",
                 "PlayerStart",
                 "Inanimate",
+                "Enemy",
             });
             modeComboBox.SelectedIndex = modeComboBox.Items.IndexOf(model.Mode);
 
@@ -101,6 +107,16 @@ namespace LD43.LevelEditor
         private void inanimatesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             model.InanimateType = inanimatesListBox.SelectedItem as string;
+        }
+
+        private void enemiesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            model.EnemyType = enemiesListBox.SelectedItem as string;
+        }
+
+        private void modeComboBox_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            model.Mode = modeComboBox.Items[modeComboBox.SelectedIndex] as string;
         }
     }
 }

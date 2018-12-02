@@ -48,6 +48,7 @@
     <Compile Include="Engine\Coroutine.cs" />
     <Compile Include="Engine\Entity.cs" />
     <Compile Include="Engine\Extensions.cs" />
+    <Compile Include="Engine\Helpers.cs" />
     <Compile Include="Engine\InputManager.cs" />
     <Compile Include="Engine\RenderingManager.cs" />
     <Compile Include="Engine\Scene.cs" />
@@ -58,14 +59,18 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Gameplay\Behaviors\CameraController.cs" />
     <Compile Include="Gameplay\Behaviors\DropController.cs" />
+    <Compile Include="Gameplay\Behaviors\EnemyController.cs" />
     <Compile Include="Gameplay\Behaviors\InanimateController.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerController.cs" />
+    <Compile Include="Gameplay\Behaviors\ProjectileController.cs" />
+    <Compile Include="Gameplay\Behaviors\ProjectileSpawner.cs" />
     <Compile Include="Gameplay\Behaviors\SacrificeUpdater.cs" />
     <Compile Include="Gameplay\Content.cs" />
     <Compile Include="Gameplay\Controls.cs" />
     <Compile Include="Gameplay\GameplayState.cs" />
     <Compile Include="Gameplay\Layers.cs" />
     <Compile Include="Gameplay\Models\Drops.cs" />
+    <Compile Include="Gameplay\Models\EnemyType.cs" />
     <Compile Include="Gameplay\Models\FacingDirection.cs" />
     <Compile Include="Gameplay\Models\InanimateType.cs" />
     <Compile Include="Gameplay\Models\Player.cs" />

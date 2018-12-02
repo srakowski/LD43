@@ -10,28 +10,113 @@ namespace LD43.Gameplay.Behaviors
 {
     public class PlayerController : Behavior
     {
-        private const int SwingRadius = 192;
+        private const int RecoupTime = 1000;
+        private const int SwingRadius = 200;
+        private const int SwingTime = 200;
         private const float _gravity = 0.009f;
         private readonly GameplayState _gs;
         private float _verticalSpeed = 0f;
+        private float _horizontalSpeed = 0f;
         private bool _onPlatform = false;
         private bool _flyMode = false;
         private bool _isSwingingWeapon = false;
+        private bool _isKnockingBack = false;
 
         public PlayerController(GameplayState gameplayState)
         {
             _gs = gameplayState;
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            _gs.Player.Position = Entity.Transform.Position;
+            _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
+        }
+
         public override void Update()
         {
-            if (Input.GetControl<Button>(Controls.SwingWeapon).IsDown())
+            if (_gs.Player.GotHit)
             {
-                StartCoroutine(SwingingWeapon());
+                StartCoroutine(HandleKnockback());
             }
 
-            PickupDrops();
+            if (!_isSwingingWeapon && !_isKnockingBack && Input.GetControl<Button>(Controls.SwingWeapon).IsDown())
+            {
+                StartCoroutine(SwingWeapon());
+            }
 
+            if (!_isKnockingBack)
+            {
+                PickupDrops();
+            }
+
+            HandleMovement();
+
+            _gs.Player.Position = Entity.Transform.Position;
+            _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
+        }
+
+        private IEnumerator HandleKnockback()
+        {
+            _isKnockingBack = true;
+            _gs.Player.GotHit = false;
+            _gs.Player.IsInvulnerable = true;            
+            _verticalSpeed = -2;
+            _horizontalSpeed = _gs.Player.FacingDirection == Models.FacingDirection.Right ? -1 : 1;
+            _onPlatform = false;
+            while (!_onPlatform)
+            {
+                yield return null;
+            }
+            _horizontalSpeed = 0;
+            _isKnockingBack = false;
+            yield return WaitYieldInstruction.Create(RecoupTime);
+            _gs.Player.IsInvulnerable = false;
+        }
+
+        private IEnumerator SwingWeapon()
+        {
+            _isSwingingWeapon = true;
+            var destroyedInanimates = _gs.Room.Inanimates
+                .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
+                .Where(i => IsFacing(i.Position));
+            if (destroyedInanimates.Any())
+            {
+                _gs.Room.DestroyInanimates(destroyedInanimates);
+            }
+
+            var hitEnemies = _gs.Room.Enemies
+                .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
+                .Where(i => IsFacing(i.Position));
+            if (hitEnemies.Any())
+            {
+                _gs.Room.HitEnemies(hitEnemies);
+            }
+
+            yield return WaitYieldInstruction.Create(SwingTime);
+            _isSwingingWeapon = false;
+        }
+
+        private void PickupDrops()
+        {
+            var bounds = CalculateBounds(Entity.Transform.Position);
+            _gs.Room.Drops
+                .Where(d => bounds.Contains(d.Position))
+                .ToList()
+                .ForEach(d =>
+                {
+                    var r = d.Match(
+                        goldDrop: g => new { GoldToAdd = g.Value, SoulsToAdd = 0 },
+                        soulDrop: s => new { GoldToAdd = 0, SoulsToAdd = s.Value }
+                    );
+                    _gs.Player.Pickup(r.GoldToAdd, r.SoulsToAdd);
+                    _gs.Room.PickupDrop(d);
+                });
+        }
+
+        private void HandleMovement()
+        {
             var newPlayerPosition = Entity.Transform.Position;
             var kb = Keyboard.GetState();
             if (InputManager.PrevKBState.IsKeyDown(Keys.F) && InputManager.CurrKBState.IsKeyUp(Keys.F))
@@ -63,21 +148,21 @@ namespace LD43.Gameplay.Behaviors
                 _verticalSpeed += (_gravity * Delta);
                 if (_verticalSpeed > 9.8f) _verticalSpeed = 9.8f;
 
-                if (_onPlatform && Input.GetControl<Button>(Controls.Jump).IsDown())
+                if (_onPlatform && Input.GetControl<Button>(Controls.Jump).IsDown() && !_isKnockingBack)
                 {
                     _verticalSpeed = -3.1f;
                     _onPlatform = false;
                 }
 
-                newPlayerPosition += (new Vector2(0, _verticalSpeed) * Delta);
+                newPlayerPosition += (new Vector2(_horizontalSpeed, _verticalSpeed) * Delta);
 
-                if (Input.GetControl<Button>(Controls.MoveLeft).IsDown())
+                if (Input.GetControl<Button>(Controls.MoveLeft).IsDown() && !_isKnockingBack)
                 {
                     newPlayerPosition += (new Vector2(-1, 0) * Delta);
                     _gs.Player.FacingDirection = Models.FacingDirection.Left;
                 }
 
-                if (Input.GetControl<Button>(Controls.MoveRight).IsDown())
+                if (Input.GetControl<Button>(Controls.MoveRight).IsDown() && !_isKnockingBack)
                 {
                     newPlayerPosition += (new Vector2(1, 0) * Delta);
                     _gs.Player.FacingDirection = Models.FacingDirection.Right;
@@ -96,46 +181,8 @@ namespace LD43.Gameplay.Behaviors
                 Entity.Transform.Position = newPlayerPosition;
                 return;
             }
-            
+
             Entity.Transform.Position = StepToNewPosition(newPlayerPosition, tiles);
-        }
-
-        private IEnumerator SwingingWeapon()
-        {
-            _isSwingingWeapon = true;
-            var destroyedInanimates = _gs.Room
-                .Inanimates
-                .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
-                .Where(i =>
-                {
-                    var pos = i.Position;
-                    return IsFacing(pos);
-                }
-                );
-            if (destroyedInanimates.Any())
-            {
-                _gs.Room.DestroyInanimates(destroyedInanimates);
-            }
-            yield return WaitYieldInstruction.Create(400);
-            _isSwingingWeapon = false;
-        }
-
-        private void PickupDrops()
-        {
-            var bounds = CalculateBounds(Entity.Transform.Position);
-            _gs.Room.Drops
-                .Where(d => bounds.Contains(d.Position))
-                .Where(d => IsFacing(d.Position))
-                .ToList()
-                .ForEach(d =>
-                {
-                    var r = d.Match(
-                        goldDrop: g => new { GoldToAdd = g.Value, SoulsToAdd = 0 },
-                        soulDrop: s => new { GoldToAdd = 0, SoulsToAdd = s.Value }
-                    );
-                    _gs.Player.Pickup(r.GoldToAdd, r.SoulsToAdd);
-                    _gs.Room.PickupDrop(d);
-                });
         }
 
         private Vector2 StepToNewPosition(Vector2 newPlayerPosition, IEnumerable<Tile> tiles)
@@ -229,8 +276,10 @@ namespace LD43.Gameplay.Behaviors
 
         private bool IsFacing(Vector2 pos)
         {
-            return (pos.X < Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
-                (pos.X > Entity.Transform.Position.X && _gs.Player.FacingDirection == Models.FacingDirection.Right);
+            var bounds = CalculateBounds(Entity.Transform.Position);
+            return 
+                (pos.X < bounds.Right && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
+                (pos.X > bounds.Left && _gs.Player.FacingDirection == Models.FacingDirection.Right);
         }
     }
 }

@@ -14,6 +14,8 @@ namespace LD43.LevelEditor
 
         public IEnumerable<string> TexturesToLoad { get; set; }
 
+        public Vector2 position;
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -34,6 +36,17 @@ namespace LD43.LevelEditor
             }
         }
 
+        private Matrix TransformationMatrix(Vector2 position) =>
+            Matrix.Identity *
+            Matrix.CreateTranslation(-position.X, -position.Y, 0f) *
+            Matrix.CreateTranslation(
+                (Editor.graphics.Viewport.Width * 0.5f),
+                (Editor.graphics.Viewport.Height * 0.5f),
+                0f);
+
+        public Vector2 ToWorldCoords(Vector2 coords) =>
+            Vector2.Transform(coords, Matrix.Invert(this.TransformationMatrix(position)));
+
         protected override void Update(GameTime gameTime)
         {
             if (textures == null)
@@ -41,10 +54,36 @@ namespace LD43.LevelEditor
                 InitTextures();
             }
 
-            base.Update(gameTime);
-            var ms = Mouse.GetState();
-            if (ms.RightButton == ButtonState.Pressed || ms.LeftButton == ButtonState.Pressed && ms.Position.X > 0)
+            var kb = Keyboard.GetState();
+            var Delta = 20;
+            if (kb.IsKeyDown(Keys.Up))
             {
+                position += (new Vector2(0, -1f) * Delta);
+            }
+            if (kb.IsKeyDown(Keys.Down))
+            {
+                position += (new Vector2(0, 1f) * Delta);
+            }
+            if (kb.IsKeyDown(Keys.Left))
+            {
+                position += (new Vector2(-1f, 0) * Delta);
+            }
+            if (kb.IsKeyDown(Keys.Right))
+            {
+                position += (new Vector2(1f, 0) * Delta);
+            }
+
+            base.Update(gameTime);
+            var msState = Mouse.GetState();
+            if (msState.RightButton == ButtonState.Pressed || msState.LeftButton == ButtonState.Pressed && msState.Position.X > 0)
+            {
+                var ms = new
+                {
+                    LeftButton = msState.LeftButton,
+                    RightButton = msState.RightButton,
+                    Position = ToWorldCoords(msState.Position.ToVector2()).ToPoint()
+                };
+
                 var x = ms.Position.X / RVM.TileSize;
                 var y = ms.Position.Y / RVM.TileSize;
                 if (x >= 0 && x < RVM.Width && y >= 0 && y < RVM.Height)
@@ -68,8 +107,8 @@ namespace LD43.LevelEditor
                     }
                     else if (RVM.Mode == "Inanimate")
                     {
-                        var ix = (ms.Position.X - (ms.Position.X % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
-                        var iy = (ms.Position.Y - (ms.Position.Y % RVM.SnapInanimateTo)) + (RVM.SnapInanimateTo / 2);
+                        var ix = (ms.Position.X - (ms.Position.X % RVM.SnapTo)) + (RVM.SnapTo / 2);
+                        var iy = (ms.Position.Y - (ms.Position.Y % RVM.SnapTo)) + (RVM.SnapTo / 2);
                         var tar = RVM.Inanimates.FirstOrDefault(m => m.Position.X == ix && m.Position.Y == iy);
                         if (ms.LeftButton == ButtonState.Pressed && tar == null)
                         {
@@ -84,15 +123,37 @@ namespace LD43.LevelEditor
                             RVM.Inanimates.Remove(tar);
                         }
                     }
+                    else if (RVM.Mode == "Enemy")
+                    {
+                        var ix = (ms.Position.X - (ms.Position.X % RVM.SnapTo)) + (RVM.SnapTo / 2);
+                        var iy = (ms.Position.Y - (ms.Position.Y % RVM.SnapTo)) + (RVM.SnapTo / 2);
+                        var tar = RVM.Enemies.FirstOrDefault(m => m.Position.X == ix && m.Position.Y == iy);
+                        if (ms.LeftButton == ButtonState.Pressed && tar == null)
+                        {
+                            RVM.Enemies.Add(new EnemyViewModel
+                            {
+                                Type = RVM.EnemyType,
+                                Position = new Point(ix, iy),
+                            });
+                        }
+                        if (ms.RightButton == ButtonState.Pressed && tar != null)
+                        {
+                            RVM.Enemies.Remove(tar);
+                        }
+                    }
                 }
             }
         }
 
         protected override void Draw()
         {
+            Editor.graphics.Clear(Color.CornflowerBlue);
+
             if (textures == null) return;
 
-            Editor.spriteBatch.Begin();
+            var matrix = TransformationMatrix(position);
+
+            Editor.spriteBatch.Begin(transformMatrix: matrix);
             for (var x = 0; x < RVM.Width; x++)
                 for (var y = 0; y < RVM.Height; y++)
                 {
@@ -106,21 +167,34 @@ namespace LD43.LevelEditor
             Editor.spriteBatch.End();
 
 
-            Editor.spriteBatch.Begin();
+            Editor.spriteBatch.Begin(transformMatrix: matrix);
             foreach (var ina in RVM.Inanimates)
             {
                 Editor.spriteBatch.Draw(
                     texture: textures["Vase"],
                     position: ina.Position.ToVector2(),
                     color: Color.White,
-                    origin: new Vector2(RVM.SnapInanimateTo, RVM.SnapInanimateTo) / 2f
+                    origin: new Vector2(RVM.SnapTo, RVM.SnapTo) / 2f
+                );
+            }
+            Editor.spriteBatch.End();
+
+
+            Editor.spriteBatch.Begin(transformMatrix: matrix);
+            foreach (var ina in RVM.Enemies)
+            {
+                Editor.spriteBatch.Draw(
+                    texture: textures["StarEnemy"],
+                    position: ina.Position.ToVector2(),
+                    color: Color.White,
+                    origin: new Vector2(RVM.SnapTo, RVM.SnapTo) / 2f
                 );
             }
             Editor.spriteBatch.End();
 
 
 
-            Editor.spriteBatch.Begin();
+            Editor.spriteBatch.Begin(transformMatrix: matrix);
             var m = 1;
             Editor.spriteBatch.Draw(
                 texture: textures["PlayerPlaceholder"],
