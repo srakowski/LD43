@@ -14,10 +14,10 @@ namespace LD43.LevelEditor
 
         public string Name { get; set; }
 
-        public int Width { get; private set; } = 20;
+        public int Width { get; private set; } = 31;
 
-        public int Height { get; private set; } = 20;
-
+        public int Height { get; private set; } = 31;
+        
         public int TileSize { get; set; } = 128;
 
         public string LeftClickTexture { get; set; } = "Tile_FG";
@@ -37,9 +37,16 @@ namespace LD43.LevelEditor
             for (int r= 0; r < Width; r++)
                 for (int c = 0; c < Height; c++)
                 {
+                    var mx = Width / 2;
+                    var my = Height / 2;
                     _tiles.Add(new RoomTileViewModel
                     {
-                        Position = new Point(r, c)
+                        Position = new Point(r, c),
+                        TextureName = (r == 0 || c == 0 || r == Height - 1 || c == Width - 1) 
+                            && !((r == 0 || r == Height - 1) && (c == mx - 1 || c == mx || c == mx + 1))
+                            && !((r == my - 1 || r == my || r == (my + 1)) && (c == 0 || c == Width - 1))
+                            ?  "Tile_FG" 
+                            : "Tile_BG",
                     });
                 }
         }
@@ -55,6 +62,7 @@ namespace LD43.LevelEditor
             {
                 Position = t.Position,
                 TextureName = t.TextureName,
+                SpawnGroup = t.SpawnGroup
             });
             room.Inanimates = Inanimates.Select(i => new RoomConfig.Inanimate
             {
@@ -77,16 +85,30 @@ namespace LD43.LevelEditor
 
         public int SnapTo { get; set; } = 64;
 
+        public int SpawnGroup { get; internal set; }
+
         public void Select(RoomTileViewModel roomTileViewModel)
         {
             SelectedTile = roomTileViewModel;
+        }
+
+        internal void Load(RoomConfig c)
+        {
+            _tiles = c.Tiles.Select(t => new RoomTileViewModel
+            {
+                Position = t.Position,
+                TextureName = t.TextureName,
+                SpawnGroup = t.SpawnGroup
+            }).ToList();
+            PlayerStartPosition = c.PlayerStartPosition;
         }
     }
 
     public class RoomTileViewModel
     {
         public Point Position { get; set; }
-        public string TextureName { get; set; } = "Tile_BG";
+        public string TextureName { get; set; } = "Tile_FG";
+        public int SpawnGroup { get; set; } = 0;
     }
 
     public class InanimateTypeViewModel

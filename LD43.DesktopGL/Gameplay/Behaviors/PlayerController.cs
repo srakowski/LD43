@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Collections;
+using LD43.Gameplay.Models;
+using System.Diagnostics;
 
 namespace LD43.Gameplay.Behaviors
 {
@@ -155,8 +157,8 @@ namespace LD43.Gameplay.Behaviors
 
             var tiles = _gs.CurrentRoom
                 .GetTilesNear(newPlayerPosition)
-                .Where(t => t.IsImpassable() || 
-                    (t.IsPlatform() && playerBounds.Bottom < (t.Bounds.Top + 1)));
+                .Where(t => (t.Tag as TileTag).IsImpassable || 
+                    ((t.Tag as TileTag).IsPlatform && playerBounds.Bottom < (t.Bounds.Top + 1)));
 
             if (!tiles.Any() || !tiles.Any(t => t.Bounds.Intersects(targetBounds)))
             {
@@ -245,7 +247,7 @@ namespace LD43.Gameplay.Behaviors
                 }
             }
 
-            _groundedOnPlatform = collTile.HasValue && collTile.Value.IsPlatform();
+            _groundedOnPlatform = collTile.HasValue && (collTile.Value.Tag as TileTag).IsPlatform;
             if (_groundedOnPlatform && _ignorePlatformsUntilY.HasValue)
             {
                 _groundedOnPlatform = false;
@@ -256,11 +258,12 @@ namespace LD43.Gameplay.Behaviors
         }
 
         private static Rectangle CalculateBounds(Vector2 p)
-        {
-            return new Rectangle(
-                (p - new Vector2(64, 96)).ToPoint(),
+        {            
+            var r =  new Rectangle(
+                (p + new Vector2(-64, -96)).ToPoint(),
                 new Point(128, 192)
             );
+            return r;
         }
 
         private bool IsFacing(Vector2 pos)
@@ -270,11 +273,5 @@ namespace LD43.Gameplay.Behaviors
                 (pos.X < bounds.Right && _gs.Player.FacingDirection == Models.FacingDirection.Left) ||
                 (pos.X > bounds.Left && _gs.Player.FacingDirection == Models.FacingDirection.Right);
         }
-    }
-
-    public static class PlatformHelpers
-    {
-        public static bool IsImpassable(this Tile self) => self.TextureName == "Tile_FG";
-        public static bool IsPlatform(this Tile self) => self.TextureName == "Tile_PF";
     }
 }

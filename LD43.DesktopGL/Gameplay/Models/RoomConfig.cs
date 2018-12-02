@@ -11,10 +11,6 @@ namespace LD43.Gameplay.Models
 
         public int SizeY { get; set; }
 
-        public int StartX { get; set; }
-
-        public int StartY { get; set; }
-
         public Point PlayerStartPosition { get; set; }
 
         public IEnumerable<Tile> Tiles { get; set; }
@@ -27,6 +23,7 @@ namespace LD43.Gameplay.Models
         {
             public Point Position { get; set; }
             public string TextureName { get; set; }
+            public int SpawnGroup { get; set; }
         }
 
         public class Inanimate

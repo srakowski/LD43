@@ -1,4 +1,5 @@
 ﻿using LD43.Gameplay.Models;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -45,58 +46,68 @@ namespace LD43.Gameplay
 
         private Room[] GenerateRooms()
         {
-            var r1 = new RoomConfig();
-            r1.SizeX = 20;
-            r1.SizeY = 20;
-            r1.TileSize = 128;
-            r1.Inanimates = Enumerable.Empty<RoomConfig.Inanimate>();
-            r1.Enemies = Enumerable.Empty<RoomConfig.Enemy>();
-            r1.PlayerStartPosition = new Microsoft.Xna.Framework.Point(400, 400);
-            var tiles = new List<RoomConfig.Tile>();
-            for (int x = 0; x < r1.SizeX; x++)
-                for (int y = 0; y < r1.SizeY; y++)
-                {
-                    tiles.Add(x == 0 || y == 0 || y == r1.SizeY - 1
-                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_FG" }
-                        : y % 4 == 0
-                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_PF" }
-                        : new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_BG" }
-                    );
-                }
-            r1.Tiles = tiles;
+            var loc = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
-            var r2 = new RoomConfig();
-            r2.SizeX = 20;
-            r2.SizeY = 20;
-            r2.StartX = 20;
-            r2.StartY = 0;
-            r2.TileSize = 128;
-            r2.Inanimates = Enumerable.Empty<RoomConfig.Inanimate>();
-            r2.Enemies = Enumerable.Empty<RoomConfig.Enemy>();
-            tiles = new List<RoomConfig.Tile>();
-            for (int x = r2.StartX; x < r2.StartX + r2.SizeX; x++)
-                for (int y = r2.StartY; y < r2.StartY + r2.SizeY; y++)
-                {
-                    tiles.Add(x == r2.StartX + r2.SizeX - 1 || y == 0 || y == r2.StartY + r2.SizeY - 1
-                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_FG" }
-                        : y % 4 == 0
-                        ? new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_PF" }
-                        : new RoomConfig.Tile { Position = new Microsoft.Xna.Framework.Point(x, y), TextureName = "Tile_BG" }
-                    );
-                }
-            r2.Tiles = tiles;
+            var config1 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room.json")));
+            var config2 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room2.json")));
 
-            return new[]
+            var configs = new[] { config1, config2 };
+
+            var rooms = new Dictionary<Point, Room>();
+            rooms.Add(Point.Zero, new Room(config1, Point.Zero, this));
+            ExpandDungeon(rooms, configs, Point.Zero);
+            CloseEntries(rooms);
+            return rooms.Values.ToArray();
+        }
+
+        private void CloseEntries(Dictionary<Point, Room> rooms)
+        {
+            foreach (var key in rooms.Keys)
             {
-                new Room(r1, this),
-                new Room(r2, this)
-            };
+                var value = rooms[key];
+                var flags = "";
+                if (!rooms.ContainsKey(key + new Point(0, -1))) flags += "N";
+                if (!rooms.ContainsKey(key + new Point(1, 0))) flags += "E";
+                if (!rooms.ContainsKey(key + new Point(0, 1))) flags += "S";
+                if (!rooms.ContainsKey(key + new Point(-1, 0))) flags += "W";
+                if (flags.Length > 0)
+                {
+                    value.CloseEntries(flags);
+                }
+            }
+        }
 
-            //var loc = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            //return new[] {
-            //    new Room(JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room.json"))), this),
-            //    new Room(JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room2.json"))), this)
-            //};
+        private void ExpandDungeon(Dictionary<Point, Room> rooms, RoomConfig[] configs, Point fromPoint)
+        {
+            var dirFlags = "NESW";
+            if (CreateRoom(rooms, configs, fromPoint + new Point(0, -1))) dirFlags = dirFlags.Replace("N", "");
+            if (CreateRoom(rooms, configs, fromPoint + new Point(1, 0))) dirFlags = dirFlags.Replace("E", "");
+            if (CreateRoom(rooms, configs, fromPoint + new Point(0, 1))) dirFlags = dirFlags.Replace("S", "");
+            //if (CreateRoom(rooms, configs, fromPoint + new Point(-1, 0))) dirFlags = dirFlags.Replace("W", "");
+        }
+
+        private bool CreateRoom(Dictionary<Point, Room> rooms, RoomConfig[] configs, Point point)
+        {
+            if (rooms.ContainsKey(point)) return true;
+            
+            var distanceFromCenter = Vector2.Distance(Vector2.Zero, point.ToVector2());
+            var chanceToSpawn =
+                distanceFromCenter < 2 ? 100 :
+                distanceFromCenter < 3 ? 90 :
+                distanceFromCenter < 5 ? 60 :
+                distanceFromCenter < 8 ? 40 :
+                10;
+
+            bool shouldSpawn = Random.Next(100) < chanceToSpawn;
+            if (!shouldSpawn) return false;
+
+            var config = Random.Next(configs.Length);
+
+            var room = new Room(configs[config], point * new Point(31, 31), this);
+            rooms[point] = room;
+
+            ExpandDungeon(rooms, configs, point);
+            return true;
         }
     }
 }

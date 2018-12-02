@@ -7,13 +7,15 @@ namespace LD43.Engine
 {
     public struct Tile
     {
-        public Tile(Rectangle bounds, string texture = null)
+        public Tile(Rectangle bounds, string texture = null, object tag = null)
         {
             Bounds = bounds;
             TextureName = texture;
+            Tag = tag;
         }
         public Rectangle Bounds { get; }
         public string TextureName { get; }
+        public object Tag { get; set; }
     }
 
     public class TilemapRenderer : Renderer

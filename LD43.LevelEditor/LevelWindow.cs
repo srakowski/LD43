@@ -101,6 +101,11 @@ namespace LD43.LevelEditor
                             tile.TextureName = RVM.RightClickTexture;
                         }
                     }
+                    else if (RVM.Mode == "SpawnGroup")
+                    {
+                        var tile = RVM.Tiles.FirstOrDefault(r => r.Position.X == x && r.Position.Y == y);
+                        tile.SpawnGroup = RVM.SpawnGroup;
+                    }
                     else if (RVM.Mode == "PlayerStart")
                     {
                         RVM.PlayerStartPosition = new Point(ms.Position.X, ms.Position.Y);
@@ -161,7 +166,8 @@ namespace LD43.LevelEditor
                     Editor.spriteBatch.Draw(
                         texture: textures[t.TextureName],
                         destinationRectangle: new Rectangle(x * RVM.TileSize, y * RVM.TileSize, RVM.TileSize, RVM.TileSize),
-                        color: Color.White);
+                        color: t.SpawnGroup  == RVM.SpawnGroup && t.SpawnGroup> 0 ? Color.Green :
+                            t.SpawnGroup > 0 ? Color.Red : Color.White);
                 }
 
             Editor.spriteBatch.End();

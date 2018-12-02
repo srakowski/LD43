@@ -14,15 +14,15 @@ namespace LD43.Gameplay.Models
 
         private List<Drop> _drops = new List<Drop>();
 
-        public Room(RoomConfig config, GameplayState gs)
+        public Room(RoomConfig config, Point offset, GameplayState gs)
         {
             PlayerStartPosition = config.PlayerStartPosition.ToVector2();
 
-            _offset = new Point(config.StartX, config.StartY);
+            _offset = offset;
 
             Bounds = new Rectangle(
-                config.StartX * config.TileSize,
-                config.StartY * config.TileSize,
+                offset.X * config.TileSize,
+                offset.Y * config.TileSize,
                 config.SizeX * config.TileSize,
                 config.SizeY * config.TileSize
             );
@@ -30,11 +30,19 @@ namespace LD43.Gameplay.Models
             TileSize = config.TileSize;
 
             var tm = new Tile[config.SizeX, config.SizeY];
-            for (int x = config.StartX, xt = 0; x < config.StartX + config.SizeX; x++, xt++)
-                for (int y = config.StartY, yt = 0; y < config.StartY + config.SizeY; y++, yt++)
+            for (int x = offset.X, xt = 0; x < offset.X + config.SizeX; x++, xt++)
+                for (int y = offset.Y, yt = 0; y < offset.Y + config.SizeY; y++, yt++)
                 {
-                    var roomTile = config.Tiles.First(t => t.Position.X == x && t.Position.Y == y);
-                    tm[xt, yt] = new Tile(new Rectangle(x * TileSize, y * TileSize, TileSize, TileSize), roomTile.TextureName);
+                    var roomTile = config.Tiles.First(t => t.Position.X == xt && t.Position.Y == yt);
+                    tm[xt, yt] = new Tile(
+                        new Rectangle(x * TileSize, y * TileSize, TileSize, TileSize),
+                        roomTile.TextureName, 
+                        new TileTag
+                        {
+                            RoomPosition = new Point(xt, yt),
+                            IsImpassable = roomTile.TextureName == "Tile_FG",
+                            IsPlatform = roomTile.TextureName == "Tile_PF",
+                        });
                 }
             Tilemap = tm;
 
@@ -110,6 +118,59 @@ namespace LD43.Gameplay.Models
                 _enemies.Remove(e);
             }
         }
+
+        public void CloseEntries(string directionFlags)
+        {
+            var tiles = Flatten(Tilemap);
+            var tilesToClose = Enumerable.Empty<Tile>();
+            if (directionFlags.Contains("N"))
+            {
+                tilesToClose = tilesToClose.Concat(tiles.Where(t => (t.Tag as TileTag).RoomPosition.Y == 0));
+            }
+            if (directionFlags.Contains("E"))
+            {
+                tilesToClose = tilesToClose.Concat(tiles.Where(t => (t.Tag as TileTag).RoomPosition.X == 30));
+            }
+            if (directionFlags.Contains("S"))
+            {
+                tilesToClose = tilesToClose.Concat(tiles.Where(t => (t.Tag as TileTag).RoomPosition.Y == 30));
+            }
+            if (directionFlags.Contains("W"))
+            {
+                tilesToClose = tilesToClose.Concat(tiles.Where(t => (t.Tag as TileTag).RoomPosition.X == 0));
+            }
+            tilesToClose
+                .Select(t =>
+                {
+                    var tag = t.Tag as TileTag;
+                    tag.RoomPosition = tag.RoomPosition;
+                    tag.IsImpassable = true;
+                    tag.IsPlatform = false;
+                    tag.SpawnGroup = 0;
+                    return new { Pos = tag.RoomPosition, Tile = new Tile(t.Bounds, "Tile_FG", tag) };
+                })
+                .ToList()
+                .ForEach(t => Tilemap[t.Pos.X, t.Pos.Y] = t.Tile);
+        }
+
+        private static IEnumerable<Tile> Flatten<Tile>(Tile[,] map)
+        {
+            for (var r = 0; r < map.GetLength(0); r++)
+            {
+                for (var c = 0; c < map.GetLength(1); c++)
+                {
+                    yield return map[r, c];
+                }
+            }
+        }
+    }
+
+    public class TileTag
+    {
+        public Point RoomPosition { get; set; }
+        public bool IsImpassable { get; set; }
+        public bool IsPlatform { get; set; }
+        public int SpawnGroup { get; set; }
     }
 
     public class Inanimate
