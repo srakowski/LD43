@@ -80,19 +80,22 @@ namespace LD43.Engine
     {
         public const string DefaultLayerName = "default";
 
-        public Layer(string name, int zIndex)
+        public Layer(string name, int zIndex, bool stickToCamera = false)
         {
             Name = name;
             ZIndex = zIndex;
+            StickToCamera = stickToCamera;
         }
 
         public string Name { get; set; } = "";
 
         public int ZIndex { get; set; } = 0;
 
+        public bool StickToCamera { get; set; }
+
         public void Begin(SpriteBatch spriteBatch, Transform cameraTransform)
         {
-            spriteBatch.Begin(transformMatrix: TransformationMatrix(spriteBatch.GraphicsDevice, cameraTransform));
+            spriteBatch.Begin(transformMatrix: StickToCamera ? (Matrix?)null : TransformationMatrix(spriteBatch.GraphicsDevice, cameraTransform));
         }
         
         public void End(SpriteBatch spriteBatch)

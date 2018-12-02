@@ -58,6 +58,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Gameplay\Behaviors\CameraController.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerController.cs" />
+    <Compile Include="Gameplay\Behaviors\SacrificeTimerUpdater.cs" />
     <Compile Include="Gameplay\Content.cs" />
     <Compile Include="Gameplay\Controls.cs" />
     <Compile Include="Gameplay\GameplayState.cs" />
@@ -133,6 +134,7 @@
     <Content Include="Content\Rooms\room.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\GenericFont.spritefont" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

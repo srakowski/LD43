@@ -12,6 +12,8 @@ namespace LD43.Engine
 
         public string TextureName { get; set; }
 
+        public Color Color { get; set; } = Color.White;
+
         public SpriteRenderer(string textureName)
         {
             TextureName = textureName;
@@ -32,8 +34,53 @@ namespace LD43.Engine
             spriteBatch.Draw(
                 texture: _textureCache.Value,
                 position: transform.Position,
-                color: Color.White,
+                color: Color,
                 origin: _textureCache.Value.Bounds.Center.ToVector2()
+            );
+        }
+    }
+
+    public class SpriteTextRenderer : Renderer
+    {
+        private KeyValuePair<string, SpriteFont> _fontCache;
+
+        public string SpriteFontName { get; set; }
+
+        public string Text { get; set; }
+
+        public Color Color { get; set; } = Color.White;
+
+        public bool Center { get; set; } = false;
+
+        public SpriteTextRenderer(string spriteFontName)
+        {
+            SpriteFontName = spriteFontName;
+        }
+
+        public override void Draw(SpriteBatch spriteBatch, Dictionary<string, object> assetCatalog)
+        {
+            if (_fontCache.Key != SpriteFontName)
+            {
+                _fontCache = new KeyValuePair<string, SpriteFont>(
+                    SpriteFontName,
+                    assetCatalog[SpriteFontName] as SpriteFont
+                );
+            }
+
+            var transform = Entity.Transform;
+
+            var bounds = _fontCache.Value.MeasureString(Text);
+
+            spriteBatch.DrawString(
+                spriteFont: _fontCache.Value,
+                text: Text,
+                position: transform.Position,
+                color: Color,
+                rotation: transform.Rotation,
+                scale: transform.Scale,
+                origin: Center ? (bounds / 2f) : Vector2.Zero,
+                effects: SpriteEffects.None,
+                layerDepth: 0f
             );
         }
     }

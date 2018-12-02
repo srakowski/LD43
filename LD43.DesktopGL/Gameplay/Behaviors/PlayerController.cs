@@ -12,7 +12,7 @@ namespace LD43.Gameplay.Behaviors
         private readonly GameplayState _gs;
         private float _verticalSpeed = 0f;
         private bool _onPlatform = false;
-        private bool _flyMode = true;
+        private bool _flyMode = false;
 
         public PlayerController(GameplayState gameplayState)
         {
@@ -51,9 +51,11 @@ namespace LD43.Gameplay.Behaviors
             else
             {
                 _verticalSpeed += (_gravity * Delta);
+                if (_verticalSpeed > 9.8f) _verticalSpeed = 9.8f;
+
                 if (_onPlatform && Input.GetControl<Button>(Controls.Jump).IsDown())
                 {
-                    _verticalSpeed = -3f;
+                    _verticalSpeed = -3.1f;
                     _onPlatform = false;
                 }
 

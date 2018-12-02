@@ -8,7 +8,10 @@
     {
         public static IEnumerable<Layer> Create()
         {
-            return Enumerable.Empty<Layer>();
+            return new[]
+            {
+                new Layer("Hud", 100, stickToCamera: true),
+            };
         }
     }
 }

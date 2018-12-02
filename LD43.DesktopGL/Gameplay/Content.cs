@@ -16,6 +16,7 @@ namespace LD43.Gameplay
         {
             void LoadAsset<T>(string name) => _assetCatalog[name] = content.Load<T>(name);
             void Texture(string name) => LoadAsset<Texture2D>(name);
+            void Font(string name) => LoadAsset<SpriteFont>(name);
             void Room(string name) => _assetCatalog[name] = JsonConvert.DeserializeObject<Models.RoomConfig>(File.ReadAllText(Path.Combine(content.RootDirectory, $"{name}.json")));
 
             Texture("PlayerPlaceholder");
@@ -24,6 +25,8 @@ namespace LD43.Gameplay
             Texture("Tile_FG");
 
             Room("Rooms/room");
+
+            Font("GenericFont");
         }
     }
 }
