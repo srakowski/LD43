@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace LD43.Gameplay
 {
@@ -14,9 +16,14 @@ namespace LD43.Gameplay
         {
             void LoadAsset<T>(string name) => _assetCatalog[name] = content.Load<T>(name);
             void Texture(string name) => LoadAsset<Texture2D>(name);
+            void Room(string name) => _assetCatalog[name] = JsonConvert.DeserializeObject<Models.RoomConfig>(File.ReadAllText(Path.Combine(content.RootDirectory, $"{name}.json")));
 
             Texture("PlayerPlaceholder");
             Texture("PlatformPlaceholder");
+            Texture("Tile_BG");
+            Texture("Tile_FG");
+
+            Room("Rooms/room");
         }
     }
 }

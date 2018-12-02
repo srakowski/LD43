@@ -10,7 +10,7 @@ namespace LD43.Gameplay.Scenes
         {
             return new Dictionary<Type, Func<object, Scene>>
             {
-                { typeof(Dungeon), Dungeon.Create }
+                { typeof(RoomScene), RoomScene.Create }
             };
         }
     }

@@ -62,15 +62,19 @@
     <Compile Include="Gameplay\Controls.cs" />
     <Compile Include="Gameplay\GameplayState.cs" />
     <Compile Include="Gameplay\Layers.cs" />
-    <Compile Include="Gameplay\Models\Platform.cs" />
+    <Compile Include="Gameplay\Models\Room.cs" />
+    <Compile Include="Gameplay\Models\RoomConfig.cs" />
     <Compile Include="Gameplay\Scenes\Catalog.cs" />
-    <Compile Include="Gameplay\Scenes\Dungeon.cs" />
+    <Compile Include="Gameplay\Scenes\RoomScene.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -126,6 +130,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />
+    <Content Include="Content\Rooms\room.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

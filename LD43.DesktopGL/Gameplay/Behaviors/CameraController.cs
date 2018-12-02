@@ -7,15 +7,13 @@ namespace LD43.Gameplay.Behaviors
     public class CameraController : Behavior
     {
         private Entity _player;
-        private int _levelWidthInPixels;
-        private int _levelHeightInPixels;
+        private Rectangle _roomBounds;
         private GraphicsDevice _graphicsDevice;
 
-        public CameraController(Entity player, int levelWidthInPixels, int levelHeightInPixels)
+        public CameraController(Entity player, Rectangle roomBounds)
         {
             _player = player;
-            _levelWidthInPixels = levelWidthInPixels;
-            _levelHeightInPixels = levelHeightInPixels;
+            _roomBounds = roomBounds;
         }
 
         public override void Initialize()
@@ -27,8 +25,8 @@ namespace LD43.Gameplay.Behaviors
         {
             var distanceToCenterScreen = _graphicsDevice.Viewport.Bounds.Center;
             Entity.Transform.Position = new Vector2(
-                MathHelper.Clamp(_player.Transform.Position.X, distanceToCenterScreen.X, _levelWidthInPixels - distanceToCenterScreen.X),
-                MathHelper.Clamp(_player.Transform.Position.Y, distanceToCenterScreen.Y, _levelHeightInPixels - distanceToCenterScreen.Y)
+                MathHelper.Clamp(_player.Transform.Position.X, distanceToCenterScreen.X, _roomBounds.Width - distanceToCenterScreen.X),
+                MathHelper.Clamp(_player.Transform.Position.Y, distanceToCenterScreen.Y, _roomBounds.Height - distanceToCenterScreen.Y)
             );
         }
     }

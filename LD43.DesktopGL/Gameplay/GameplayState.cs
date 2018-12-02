@@ -5,7 +5,7 @@ namespace LD43.Gameplay
 {
     public class GameplayState
     {
-        public IEnumerable<Platform> Platforms { get; set; }
+        public Room Room { get; set; }
 
         public static GameplayState Create() => new GameplayState();
     }
