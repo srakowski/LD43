@@ -60,6 +60,7 @@
     <Compile Include="Gameplay\Behaviors\CameraController.cs" />
     <Compile Include="Gameplay\Behaviors\DropController.cs" />
     <Compile Include="Gameplay\Behaviors\EnemyController.cs" />
+    <Compile Include="Gameplay\Behaviors\HammerController.cs" />
     <Compile Include="Gameplay\Behaviors\InanimateController.cs" />
     <Compile Include="Gameplay\Behaviors\PlayerController.cs" />
     <Compile Include="Gameplay\Behaviors\ProjectileController.cs" />
@@ -153,6 +154,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Rooms\sacrificeRoom.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Rooms\room3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Rooms\room4.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Rooms\room5.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />

@@ -29,6 +29,7 @@ namespace LD43.Gameplay
             Texture("StarEnemy_Shot");
             Texture("SoulDrop");
             Texture("SacrificialFirePit");
+            Texture("Hammer");
 
             Font("GenericFont");
         }

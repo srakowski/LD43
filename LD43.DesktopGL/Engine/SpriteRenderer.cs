@@ -16,6 +16,10 @@ namespace LD43.Engine
 
         public bool Center { get; set; } = true;
 
+        public Vector2? Origin { get; set; } = null;
+
+        public SpriteEffects SpriteEffects { get; set; } = SpriteEffects.None;
+
         public SpriteRenderer(string textureName)
         {
             TextureName = textureName;
@@ -38,7 +42,10 @@ namespace LD43.Engine
                 position: transform.Position,
                 color: Color,
                 rotation: transform.Rotation,
-                origin: Center ? _textureCache.Value.Bounds.Center.ToVector2() : Vector2.Zero
+                origin: Origin.HasValue ? Origin.Value : 
+                    Center ? _textureCache.Value.Bounds.Center.ToVector2()
+                    : Vector2.Zero,
+                effects: SpriteEffects
             );
         }
     }

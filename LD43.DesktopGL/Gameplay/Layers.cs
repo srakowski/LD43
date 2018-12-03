@@ -12,9 +12,9 @@
             {
                 new Layer("Inanimates", 25),
 
-                new Layer("Player", 50),
+                new Layer("Enemies", 35),
 
-                new Layer("Enemies", 75),
+                new Layer("Player", 50),
 
                 new Layer("Projectiles", 90),
 

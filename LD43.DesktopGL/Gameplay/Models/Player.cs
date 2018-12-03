@@ -11,6 +11,11 @@ namespace LD43.Gameplay.Models
         {
             AddComponent(new SpriteRenderer("PlayerPlaceholder") { Layer = "Player" });
             AddComponent(new PlayerController(gs));
+
+            Hammer = new Entity();
+            Hammer.AddComponent(new SpriteRenderer("Hammer") { Layer = "Player", Origin = new Vector2(115, 215) });
+            Hammer.Parent = this;
+            Hammer.AddComponent(new HammerController(gs));
         }
 
         public Vector2 Position
@@ -18,6 +23,8 @@ namespace LD43.Gameplay.Models
             get => Transform.Position;
             set => Transform.Position = value;
         }
+
+        public Entity Hammer { get; set; }
 
         public Rectangle Bounds { get; set; }
 
@@ -36,6 +43,7 @@ namespace LD43.Gameplay.Models
         public bool GotHit { get; set; } = false;
 
         public bool IsDead { get; set; } = false;
+
         public string ReasonForDeath { get; private set; }
 
         public void Pickup(int goldToAdd, int soulsToAdd)

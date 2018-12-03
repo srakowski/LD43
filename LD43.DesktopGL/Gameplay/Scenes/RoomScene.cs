@@ -3,6 +3,7 @@ using LD43.Gameplay.Behaviors;
 using LD43.Gameplay.Models;
 using Microsoft.Xna.Framework;
 using System.Linq;
+using System;
 
 namespace LD43.Gameplay.Scenes
 {
@@ -31,6 +32,7 @@ namespace LD43.Gameplay.Scenes
             var player = gs.Player;
             if (player.Position == Vector2.Zero) player.Transform.Position = room.PlayerStartPosition;
             s.AddEntity(player);
+            s.AddEntity(player.Hammer);            
 
             var camera = new Entity();
             camera.AddComponent(new Camera());

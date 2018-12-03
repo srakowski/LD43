@@ -12,8 +12,7 @@ namespace LD43.Gameplay.Behaviors
     public class PlayerController : Behavior
     {
         private const int RecoupTime = 1000;
-        private const int SwingRadius = 256;
-        private const int SwingTime = 200;
+        private const int SwingRadius = 300;
         private const float _gravity = 0.009f;
         private readonly GameplayState _gs;
         private float _verticalSpeed = 0f;
@@ -25,6 +24,8 @@ namespace LD43.Gameplay.Behaviors
         private int? _ignorePlatformsUntilY = null;
         private bool _dead = false;
         private bool _win = false;
+        private SpriteRenderer _sr;
+        private HammerController _hm;
 
         public PlayerController(GameplayState gameplayState)
         {
@@ -34,7 +35,9 @@ namespace LD43.Gameplay.Behaviors
         public override void Initialize()
         {
             base.Initialize();
-            _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);            
+            _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
+            _sr = Entity.Components.OfType<SpriteRenderer>().First();
+            _hm = _gs.Player.Hammer.Components.OfType<HammerController>().First();
         }
 
         public override void Update()
@@ -73,6 +76,10 @@ namespace LD43.Gameplay.Behaviors
 
             HandleMovement();
             _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
+
+            _sr.SpriteEffects = _gs.Player.FacingDirection == FacingDirection.Left ?
+                Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally
+                : Microsoft.Xna.Framework.Graphics.SpriteEffects.None;            
         }
 
         private IEnumerator HandleKnockback()
@@ -96,25 +103,26 @@ namespace LD43.Gameplay.Behaviors
         private IEnumerator SwingWeapon()
         {
             _isSwingingWeapon = true;
-            ExecuteAttack();
-            yield return WaitYieldInstruction.Create(SwingTime);
-            ExecuteAttack();
+            _hm.Swing();
+            while (_hm._isSwinging)
+            {
+                ExecuteAttack();
+                yield return null;
+            }
             _isSwingingWeapon = false;
         }
 
         private void ExecuteAttack()
         {
             var destroyedInanimates = _gs.CurrentRoom.Inanimates
-                            .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
-                            .Where(i => IsFacing(i.Position));
+                            .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius);
             if (destroyedInanimates.Any())
             {
                 _gs.CurrentRoom.DestroyInanimates(destroyedInanimates);
             }
 
             var hitEnemies = _gs.CurrentRoom.Enemies
-                .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius)
-                .Where(i => IsFacing(i.Position));
+                .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius);
             if (hitEnemies.Any())
             {
                 _gs.CurrentRoom.HitEnemies(hitEnemies);

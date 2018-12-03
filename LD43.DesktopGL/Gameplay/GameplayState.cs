@@ -85,8 +85,11 @@ namespace LD43.Gameplay
             var sacConfig = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/sacrificeRoom.json")));
             var config1 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room.json")));
             var config2 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room2.json")));
+            var config3 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room3.json")));
+            var config4 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room4.json")));
+            var config5 = JsonConvert.DeserializeObject<RoomConfig>(File.ReadAllText(Path.Combine(loc, $"Content/Rooms/room5.json")));
 
-            var configs = new[] { config1, config2 };
+            var configs = new[] { config1, config2, config3, config4, config5 };
 
             var rooms = new Dictionary<Point, Room>();
 

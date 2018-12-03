@@ -30,16 +30,16 @@ namespace LD43.Gameplay.Behaviors
             if (_enemy.IsDead)
             {
                 _sceneManager.ActiveScene.RemoveEntity(Entity);
-                if (_enemy.GoldValue > 0)
-                {
-                    var drop = new GoldDrop(Entity.Transform.Position, _enemy.GoldValue);
-                    _gs.CurrentRoom.AddDrop(drop);
-                    var ge = new Entity();
-                    ge.AddComponent(new SpriteRenderer("GoldDrop"));
-                    ge.AddComponent(new DropController(drop));
-                    ge.Transform.Position = Entity.Transform.Position;
-                    _sceneManager.ActiveScene.AddEntity(ge);                    
-                }
+                //if (_enemy.GoldValue > 0)
+                //{
+                //    var drop = new GoldDrop(Entity.Transform.Position, _enemy.GoldValue);
+                //    _gs.CurrentRoom.AddDrop(drop);
+                //    var ge = new Entity();
+                //    ge.AddComponent(new SpriteRenderer("GoldDrop"));
+                //    ge.AddComponent(new DropController(drop));
+                //    ge.Transform.Position = Entity.Transform.Position;
+                //    _sceneManager.ActiveScene.AddEntity(ge);                    
+                //}
 
                 var soulDrop = new SoulDrop(Entity.Transform.Position);
                 _gs.CurrentRoom.AddDrop(soulDrop);
@@ -51,10 +51,10 @@ namespace LD43.Gameplay.Behaviors
                 return;
             }
             
-            if (_gs.Player.Bounds.Intersects(CalculateBounds(Entity.Transform.Position)))
-            {
-                _gs.Player.Hit();
-            }
+            //if (_gs.Player.Bounds.Intersects(CalculateBounds(Entity.Transform.Position)))
+            //{
+            //    _gs.Player.Hit();
+            //}
         }
 
         private static Rectangle CalculateBounds(Vector2 position)

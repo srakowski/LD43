@@ -220,7 +220,7 @@ namespace LD43.Gameplay.Models
         {
             Position = pos;
             Type = type;
-            GoldValue = gs.Random.Next(10);
+            GoldValue = 1;
         }
 
         public Vector2 Position { get; }
@@ -238,7 +238,7 @@ namespace LD43.Gameplay.Models
         {
             Position = pos;
             Type = type;
-            GoldValue = gs.Random.Next(10);
+            GoldValue = 0;
             Damage = type.Match(
                 star: () => 20
             );

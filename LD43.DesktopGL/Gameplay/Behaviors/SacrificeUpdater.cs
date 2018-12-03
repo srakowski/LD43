@@ -34,8 +34,8 @@ namespace LD43.Gameplay.Behaviors
             _spriteTextRenderer.Text =
                 $"HP: {_gs.Player.HP}/{_gs.Player.MaxHP}\n" +
                 $"Sacrifice Due In: {tr.Minutes.ToString("00")}:{tr.Seconds.ToString("00")}\n" +
-                $"Gold: {_gs.Player.GoldCollected}/{_gs.Sacrifice.GoldRequired}\n" +
-                $"Souls: {_gs.Player.SoulsCollected}/{_gs.Sacrifice.SoulsRequired}";
+                $"Blue Crystal: {_gs.Player.GoldCollected}/{_gs.Sacrifice.GoldRequired}\n" +
+                $"Red Crystal: {_gs.Player.SoulsCollected}/{_gs.Sacrifice.SoulsRequired}";
         }
     }
 }
