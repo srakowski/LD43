@@ -1,6 +1,7 @@
 ﻿namespace LD43.Gameplay
 {
     using LD43.Engine;
+    using Microsoft.Xna.Framework.Graphics;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -14,7 +15,9 @@
 
                 new Layer("Enemies", 35),
 
-                new Layer("Player", 50),
+                new Layer("Player", 50) {
+                    BlendState = BlendState.NonPremultiplied
+                },
 
                 new Layer("Projectiles", 90),
 

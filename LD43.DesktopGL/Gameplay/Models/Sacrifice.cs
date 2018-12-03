@@ -27,9 +27,9 @@ namespace LD43.Gameplay.Models
         {
             return new Sacrifice(
                 level: 1,
-                timeInMS: 3 * 60 * 1000, 
-                goldReq: 10, 
-                soulsReq: 10,
+                timeInMS: 2 * 60 * 1000, 
+                goldReq: 2, 
+                soulsReq: 2,
                 gs: gs
             );
         }
@@ -45,9 +45,9 @@ namespace LD43.Gameplay.Models
 
             return new Sacrifice(
                 newLevel,
-                timeInMS: ((3) * 60 * 1000) * 2,
-                goldReq: this.GoldRequired + (int)(this.GoldRequired * 2),
-                soulsReq: this.SoulsRequired + (int)(this.SoulsRequired * 2),
+                timeInMS: TimeRequiredInMilleseconds + 2,
+                goldReq: this.GoldRequired + (int)(this.GoldRequired),
+                soulsReq: this.SoulsRequired + (int)(this.SoulsRequired),
                 gs: this._gs);
         }
     }

@@ -25,6 +25,7 @@ namespace LD43.Gameplay.Behaviors
         private bool _dead = false;
         private bool _win = false;
         private SpriteRenderer _sr;
+        private SpriteRenderer _hmr;
         private HammerController _hm;
 
         public PlayerController(GameplayState gameplayState)
@@ -37,6 +38,7 @@ namespace LD43.Gameplay.Behaviors
             base.Initialize();
             _gs.Player.Bounds = CalculateBounds(Entity.Transform.Position);
             _sr = Entity.Components.OfType<SpriteRenderer>().First();
+            _hmr = _gs.Player.Hammer.Components.OfType<SpriteRenderer>().First();
             _hm = _gs.Player.Hammer.Components.OfType<HammerController>().First();
         }
 
@@ -79,7 +81,10 @@ namespace LD43.Gameplay.Behaviors
 
             _sr.SpriteEffects = _gs.Player.FacingDirection == FacingDirection.Left ?
                 Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally
-                : Microsoft.Xna.Framework.Graphics.SpriteEffects.None;            
+                : Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
+
+            _sr.Alpha = _gs.Player.IsInvulnerable ? 0.5f : 1f;
+            _hmr.Alpha = _gs.Player.IsInvulnerable ? 0.5f : 1f;
         }
 
         private IEnumerator HandleKnockback()
@@ -114,17 +119,21 @@ namespace LD43.Gameplay.Behaviors
 
         private void ExecuteAttack()
         {
+            bool played = false;
             var destroyedInanimates = _gs.CurrentRoom.Inanimates
                             .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius);
             if (destroyedInanimates.Any())
             {
+                AudioPlayer.PlaySfx("hitthing");
                 _gs.CurrentRoom.DestroyInanimates(destroyedInanimates);
+                played = true;
             }
 
             var hitEnemies = _gs.CurrentRoom.Enemies
                 .Where(i => Vector2.Distance(Entity.Transform.Position, i.Position) < SwingRadius);
             if (hitEnemies.Any())
             {
+                if (!played) AudioPlayer.PlaySfx("hitthing");
                 _gs.CurrentRoom.HitEnemies(hitEnemies);
             }
         }
@@ -132,11 +141,18 @@ namespace LD43.Gameplay.Behaviors
         private void PickupDrops()
         {
             var bounds = CalculateBounds(Entity.Transform.Position);
+            var played = false;
             _gs.CurrentRoom.Drops
                 .Where(d => bounds.Contains(d.Position))
                 .ToList()
                 .ForEach(d =>
                 {
+                    if (!played)
+                    {
+                        AudioPlayer.PlaySfx("pickup");
+                        played = true;
+                    }
+
                     var r = d.Match(
                         goldDrop: g => new { GoldToAdd = g.Value, SoulsToAdd = 0 },
                         soulDrop: s => new { GoldToAdd = 0, SoulsToAdd = s.Value }

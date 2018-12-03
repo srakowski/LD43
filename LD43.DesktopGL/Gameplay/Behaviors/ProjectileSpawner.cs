@@ -31,6 +31,7 @@ namespace LD43.Gameplay.Behaviors
         public void Spawn(Vector2 direction)
         {
             if (_gs.IsGameOver) return;
+            AudioPlayer.PlaySfx("spawn");
             _sceneManager.ActiveScene.AddEntity(_projectileFactory.Invoke(Entity.Transform.Position, direction));
         }
     }

@@ -20,6 +20,8 @@ namespace LD43.Engine
 
         public SpriteEffects SpriteEffects { get; set; } = SpriteEffects.None;
 
+        public float Alpha { get; set; } = 1f;
+
         public SpriteRenderer(string textureName)
         {
             TextureName = textureName;
@@ -40,7 +42,7 @@ namespace LD43.Engine
             spriteBatch.Draw(
                 texture: _textureCache.Value,
                 position: transform.Position,
-                color: Color,
+                color: new Color(Color, Alpha),
                 rotation: transform.Rotation,
                 origin: Origin.HasValue ? Origin.Value : 
                     Center ? _textureCache.Value.Bounds.Center.ToVector2()

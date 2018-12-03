@@ -13,6 +13,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin abeat.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:abeat.mp3
+
+#begin abeat.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:abeat.mp3
+
 #begin GenericFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -32,6 +44,12 @@
 /processorParam:TextureFormat=Color
 /build:GoldDrop.png
 
+#begin good.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:good.wav
+
 #begin hammer.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -43,6 +61,24 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:hammer.png
+
+#begin hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:hit.wav
+
+#begin hitthing.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:hitthing.wav
+
+#begin pickup.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:pickup.wav
 
 #begin PlatformPlaceholder.png
 /importer:TextureImporter
@@ -91,6 +127,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:SoulDrop.png
+
+#begin spawn.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:spawn.wav
 
 #begin StarEnemy.png
 /importer:TextureImporter

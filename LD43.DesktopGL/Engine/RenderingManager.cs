@@ -98,9 +98,11 @@ namespace LD43.Engine
 
         public bool StickToCamera { get; set; }
 
+        public BlendState BlendState { get; set; } = null;
+
         public void Begin(SpriteBatch spriteBatch, Transform cameraTransform)
         {
-            spriteBatch.Begin(transformMatrix: StickToCamera ? (Matrix?)null : TransformationMatrix(spriteBatch.GraphicsDevice, cameraTransform));
+            spriteBatch.Begin(blendState: BlendState, transformMatrix: StickToCamera ? (Matrix?)null : TransformationMatrix(spriteBatch.GraphicsDevice, cameraTransform));
         }
         
         public void End(SpriteBatch spriteBatch)

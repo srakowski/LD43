@@ -57,6 +57,7 @@
     <Compile Include="Engine\TilemapRenderer.cs" />
     <Compile Include="Engine\Transform.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Gameplay\AudioPlayer.cs" />
     <Compile Include="Gameplay\Behaviors\CameraController.cs" />
     <Compile Include="Gameplay\Behaviors\DropController.cs" />
     <Compile Include="Gameplay\Behaviors\EnemyController.cs" />

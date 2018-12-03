@@ -22,6 +22,7 @@ namespace LD43.Gameplay.Behaviors
             base.Initialize();
             _sceneManager = Services.GetService<SceneManager>();
             _room.Enter();
+            AudioPlayer.PlaySong();
         }
 
         public override void Update()

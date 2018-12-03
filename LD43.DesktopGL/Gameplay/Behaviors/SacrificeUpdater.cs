@@ -21,6 +21,7 @@ namespace LD43.Gameplay.Behaviors
             _gs.DecrementSacrficeTimer(Delta);            
             if (_gs.IsSacrificeOverdue())
             {
+                AudioPlayer.PlaySfx("hit");
                 _gs.Player.Kill("You were smote for not collecting the sacrifice fast enough.");
                 return;
             }

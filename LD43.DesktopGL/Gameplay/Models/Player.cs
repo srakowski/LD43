@@ -46,6 +46,8 @@ namespace LD43.Gameplay.Models
 
         public string ReasonForDeath { get; private set; }
 
+        public Action Shake { get; internal set; }
+
         public void Pickup(int goldToAdd, int soulsToAdd)
         {
             GoldCollected += goldToAdd;
@@ -55,6 +57,8 @@ namespace LD43.Gameplay.Models
         internal void Hit()
         {
             if (IsInvulnerable) return;
+            AudioPlayer.PlaySfx("hit");
+            Shake?.Invoke();
             IsInvulnerable = true;
             HP -= 0.5f;
             if (HP <= 0f)

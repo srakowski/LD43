@@ -27,6 +27,7 @@ namespace LD43.Gameplay
 
         internal void CompleteTheSacrifice()
         {
+            AudioPlayer.PlaySfx("good");
             Player.HP = Player.MaxHP;
             SacrificeRequiredInMilleseconds = Sacrifice.TimeRequiredInMilleseconds;
             var nextSacrifice = Sacrifice.Next();
@@ -36,8 +37,8 @@ namespace LD43.Gameplay
                 return;
             }
             Player.HP = Player.MaxHP;
-            Player.GoldCollected = 0;
-            Player.SoulsCollected = 0;            
+            Player.GoldCollected -= Sacrifice.GoldRequired;
+            Player.SoulsCollected -= Sacrifice.SoulsRequired;            
             Sacrifice = nextSacrifice;
             SacrificeRequiredInMilleseconds = Sacrifice.TimeRequiredInMilleseconds;
         }

@@ -36,8 +36,10 @@ namespace LD43.Gameplay.Scenes
 
             var camera = new Entity();
             camera.AddComponent(new Camera());
-            camera.AddComponent(new CameraController(player, gs));
+            var cc = new CameraController(player, gs);
+            camera.AddComponent(cc);
             s.AddEntity(camera);
+            player.Shake = cc.Shake;
 
             var sacrificeTimer = new Entity();
             var spriteTextRenderer = new SpriteTextRenderer("GenericFont")
